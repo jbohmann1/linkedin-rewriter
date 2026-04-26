@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Confirming your payment…{% endblock %}
+
+{% block content %}
+<div class="text-center py-16">
+  <div class="inline-block w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-6"></div>
+  <h2 class="text-xl font-semibold text-gray-800 mb-2">Confirming your payment…</h2>
+  <p class="text-gray-500 text-sm">This usually takes 2–3 seconds. Hang tight.</p>
+</div>
+
+<script>
+(async function poll() {
+  const res  = await fetch('/poll-status?session_id={{ session_id }}');
+  const data = await res.json();
+  if (data.paid) {
+    window.location.href = '/result?session_id={{ session_id }}';
+  } else {
+    setTimeout(poll, 1500);
+  }
+})();
+</script>
+{% endblock %}

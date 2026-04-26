@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}LinkedIn Profile Rewriter — Sound like yourself, only better{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="text-center mb-10">
+  <h1 class="text-3xl font-bold text-gray-900 mb-3">Your LinkedIn profile, rewritten in 30 seconds</h1>
+  <p class="text-gray-500 text-lg">Paste your current profile. Get a stronger version that sounds like you — just clearer, sharper, and recruiter-ready.</p>
+</div>
+
+<!-- Before / After example -->
+<div class="card p-5 mb-8 bg-blue-50 border-blue-100">
+  <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-3">Example transformation</p>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <p class="text-xs text-gray-400 font-medium mb-1">Before</p>
+      <p class="text-sm text-gray-600 italic">"Results-driven professional with a passion for helping teams achieve goals in fast-paced environments."</p>
+    </div>
+    <div>
+      <p class="text-xs text-blue-600 font-medium mb-1">After ✓</p>
+      <p class="text-sm text-gray-800">"Financial controller turned product strategist — I turn messy spreadsheets and stakeholder chaos into decisions that actually ship."</p>
+    </div>
+  </div>
+</div>
+
+{% if error %}
+<div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">
+  {{ error }}
+</div>
+{% endif %}
+
+{% if request.query_params.get('cancelled') %}
+<div class="bg-amber-50 border border-amber-200 text-amber-700 rounded-xl p-4 mb-6 text-sm">
+  Payment cancelled — your rewrite is still waiting. Fill in the form again to retry.
+</div>
+{% endif %}
+
+<!-- Form -->
+<form method="POST" action="/generate" id="rewrite-form" class="space-y-5">
+
+  <div class="card p-5">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Current headline <span class="text-gray-400 font-normal">(the line under your name)</span>
+    </label>
+    <input
+      type="text" name="headline" required maxlength="300"
+      placeholder="e.g. Financial Controller | Excel | Team Leader"
+      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div class="card p-5">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      About section <span class="text-gray-400 font-normal">(paste your current text, or write a rough draft)</span>
+    </label>
+    <textarea
+      name="about" required rows="5" maxlength="3000"
+      placeholder="Paste your current About section here…"
+      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+    ></textarea>
+    <p class="text-xs text-gray-400 mt-1">Don't have one yet? Write a messy draft — we'll shape it.</p>
+  </div>
+
+  <div class="card p-5">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Experience bullets <span class="text-gray-400 font-normal">(up to 3, one per line)</span>
+    </label>
+    <textarea
+      name="bullets" rows="4" maxlength="1500"
+      placeholder="Responsible for managing monthly close process&#10;Helped with budgeting and forecasting&#10;Worked on cross-functional projects"
+      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+    ></textarea>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="card p-5">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Target role / industry</label>
+      <input
+        type="text" name="target_role" required maxlength="100"
+        placeholder="e.g. Project Manager at an architecture firm"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <div class="card p-5">
+      <label class="block text-sm font-medium text-gray-700 mb-1">Tone</label>
+      <select name="tone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+        <option value="professional">Professional</option>
+        <option value="conversational">Conversational</option>
+        <option value="bold">Bold</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="text-center pt-2">
+    <button type="submit" class="btn-primary w-full max-w-xs" id="submit-btn">
+      Rewrite my profile — $7 →
+    </button>
+    <p class="text-xs text-gray-400 mt-3">Secured by Stripe · Instant delivery · No account needed</p>
+  </div>
+
+</form>
+
+<script>
+document.getElementById('rewrite-form').addEventListener('submit', function() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating your rewrite…';
+});
+</script>
+
+{% endblock %}

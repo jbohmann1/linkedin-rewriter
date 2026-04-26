@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Your rewritten LinkedIn profile{% endblock %}
+
+{% block content %}
+
+<div class="text-center mb-8">
+  <div class="text-3xl mb-2">🎉</div>
+  <h1 class="text-2xl font-bold text-gray-900 mb-1">Your rewrite is ready</h1>
+  <p class="text-gray-500 text-sm">Copy each section and paste directly into LinkedIn. Takes 2 minutes.</p>
+</div>
+
+<!-- Headline -->
+<div class="card p-5 mb-4">
+  <div class="flex items-center justify-between mb-3">
+    <span class="text-sm font-semibold text-gray-700">Headline</span>
+    <button onclick="copyText('headline-out', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3 text-sm">
+    <div class="bg-gray-50 rounded-lg p-3">
+      <p class="text-xs text-gray-400 mb-1">Before</p>
+      <p class="text-gray-500 italic">{{ data.orig_headline }}</p>
+    </div>
+    <div class="bg-blue-50 rounded-lg p-3">
+      <p class="text-xs text-blue-500 mb-1">After ✓</p>
+      <p id="headline-out" class="text-gray-800 font-medium">{{ data.headline }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- About -->
+<div class="card p-5 mb-4">
+  <div class="flex items-center justify-between mb-3">
+    <span class="text-sm font-semibold text-gray-700">About section</span>
+    <button onclick="copyText('about-out', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
+  </div>
+
+  <div class="mb-3">
+    <p class="text-xs text-gray-400 mb-1">Before</p>
+    <p class="text-sm text-gray-400 italic bg-gray-50 rounded-lg p-3 whitespace-pre-line">{{ data.orig_about }}</p>
+  </div>
+  <div>
+    <p class="text-xs text-blue-500 mb-1">After ✓</p>
+    <p id="about-out" class="text-sm text-gray-800 bg-blue-50 rounded-lg p-3 whitespace-pre-line">{{ data.about }}</p>
+  </div>
+</div>
+
+<!-- Bullets -->
+{% if data.bullets %}
+<div class="card p-5 mb-4">
+  <div class="flex items-center justify-between mb-3">
+    <span class="text-sm font-semibold text-gray-700">Experience bullets</span>
+    <button onclick="copyText('bullets-out', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy all</button>
+  </div>
+
+  <div class="mb-3">
+    <p class="text-xs text-gray-400 mb-2">Before</p>
+    {% for b in data.orig_bullets.split('\n') %}
+      {% if b.strip() %}
+      <p class="text-sm text-gray-400 italic bg-gray-50 rounded p-2 mb-1">{{ b.strip() }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div>
+    <p class="text-xs text-blue-500 mb-2">After ✓</p>
+    <div id="bullets-out">
+      {% for bullet in data.bullets %}
+      <p class="text-sm text-gray-800 bg-blue-50 rounded p-2 mb-1">{{ bullet }}</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Tips -->
+<div class="card p-5 mb-6 bg-amber-50 border-amber-100">
+  <p class="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2">Pro tips before you paste</p>
+  <ul class="text-sm text-amber-800 space-y-1 list-disc list-inside">
+    <li>Read the rewrite out loud — does it sound like you?</li>
+    <li>Add real numbers wherever you have them — they always beat "significantly".</li>
+    <li>Update your LinkedIn URL slug while you're in there (yourname instead of yourname123abc).</li>
+    <li>Add a profile photo if you don't have one — profiles with photos get 21× more views.</li>
+  </ul>
+</div>
+
+<!-- Share / revisit -->
+<div class="text-center space-y-3">
+  <p class="text-sm text-gray-500">Want to try a different tone or target role?</p>
+  <a href="/" class="btn-primary">Rewrite again — $7</a>
+  <p class="text-xs text-gray-400 mt-2">This page expires in 1 hour for privacy reasons.</p>
+</div>
+
+<script>
+function copyText(elementId, btn) {
+  const el = document.getElementById(elementId);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = '#16a34a';
+    setTimeout(() => { btn.textContent = original; btn.style.color = ''; }, 2000);
+  });
+}
+</script>
+
+{% endblock %}
