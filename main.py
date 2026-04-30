@@ -2,6 +2,7 @@ import os
 import re
 import uuid
 import json
+import asyncio
 import stripe
 import anthropic
 
@@ -132,6 +133,37 @@ Experience:
 {jobs_text}
 """
 
+# ── Claude helpers ────────────────────────────────────────────────────────────
+
+async def call_claude(prompt: str) -> dict:
+    """Run one Claude call in a thread (SDK is sync) and return parsed JSON."""
+    loop = asyncio.get_event_loop()
+    message = await loop.run_in_executor(
+        None,
+        lambda: claude.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=2500,
+            messages=[{"role": "user", "content": prompt}],
+        )
+    )
+    if message.stop_reason == "max_tokens":
+        raise ValueError("max_tokens")
+    raw = message.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1]
+        if raw.startswith("json"):
+            raw = raw[4:]
+    return json.loads(raw.strip())
+
+
+async def run_two_rewrites(prompt: str) -> tuple[dict, dict]:
+    """Run two Claude calls concurrently and return both results."""
+    result_a, result_b = await asyncio.gather(
+        call_claude(prompt),
+        call_claude(prompt),
+    )
+    return result_a, result_b
+
 # ── Routes ───────────────────────────────────────────────────────────────────
 
 @app.get("/", response_class=HTMLResponse)
@@ -182,16 +214,13 @@ async def generate(
             status_code=422,
         )
 
-    # Call Claude
+    # ── Call Claude twice concurrently ────────────────────────────────────────
     try:
-        message = claude.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=2500,
-            messages=[{"role": "user", "content": build_prompt(headline, about, jobs, target_role, tone)}],
+        rewrite_a, rewrite_b = await run_two_rewrites(
+            build_prompt(headline, about, jobs, target_role, tone)
         )
-
-        # Detect token limit hit before trying to parse
-        if message.stop_reason == "max_tokens":
+    except ValueError as e:
+        if "max_tokens" in str(e):
             return templates.TemplateResponse(
                 "index.html",
                 {"request": request, "error": (
@@ -200,13 +229,11 @@ async def generate(
                 )},
                 status_code=422,
             )
-
-        raw = message.content[0].text.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        rewrite = json.loads(raw)
+        return templates.TemplateResponse(
+            "index.html",
+            {"request": request, "error": "Generation failed — please try again."},
+            status_code=500,
+        )
     except json.JSONDecodeError:
         return templates.TemplateResponse(
             "index.html",
@@ -223,12 +250,11 @@ async def generate(
             status_code=500,
         )
 
-    # Store rewrite in Redis
+    # Store both rewrites in Redis
     key = f"rewrite:{uuid.uuid4().hex}"
     redis.setex(key, TTL, json.dumps({
-        "headline":      rewrite.get("headline", ""),
-        "about":         rewrite.get("about", ""),
-        "jobs":          rewrite.get("jobs", []),
+        "version_a":     rewrite_a,
+        "version_b":     rewrite_b,
         "paid":          False,
         "orig_headline": headline,
         "orig_about":    about,

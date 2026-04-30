@@ -1,95 +1,124 @@
 {% extends "base.html" %}
-{% block title %}Your rewritten LinkedIn profile{% endblock %}
+{% block title %}Your two LinkedIn rewrites{% endblock %}
+{% block container_class %}max-w-5xl{% endblock %}
 
 {% block content %}
 
 <div class="text-center mb-8">
   <div class="text-3xl mb-2">🎉</div>
-  <h1 class="text-2xl font-bold text-gray-900 mb-1">Your rewrite is ready</h1>
-  <p class="text-gray-500 text-sm">Copy each section and paste directly into LinkedIn. Takes 2 minutes.</p>
+  <h1 class="text-2xl font-bold text-gray-900 mb-1">Two versions, ready to compare</h1>
+  <p class="text-gray-500 text-sm">Pick the parts you like from each — or mix and match. Copy any section directly into LinkedIn.</p>
 </div>
 
-<!-- Headline -->
+<!-- ── HEADLINE ─────────────────────────────────────────────────────────── -->
 <div class="card p-5 mb-4">
-  <div class="flex items-center justify-between mb-3">
-    <span class="text-sm font-semibold text-gray-700">Headline</span>
-    <button onclick="copyText('headline-out', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
-  </div>
-
-  <div class="grid grid-cols-2 gap-3 text-sm">
-    <div class="bg-gray-50 rounded-lg p-3">
-      <p class="text-xs text-gray-400 mb-1">Before</p>
-      <p class="text-gray-500 italic">{{ data.orig_headline }}</p>
-    </div>
-    <div class="bg-blue-50 rounded-lg p-3">
-      <p class="text-xs text-blue-500 mb-1">After ✓</p>
-      <p id="headline-out" class="text-gray-800 font-medium">{{ data.headline }}</p>
-    </div>
-  </div>
-</div>
-
-<!-- About -->
-<div class="card p-5 mb-4">
-  <div class="flex items-center justify-between mb-3">
-    <span class="text-sm font-semibold text-gray-700">About section</span>
-    <button onclick="copyText('about-out', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
-  </div>
-
-  <div class="mb-3">
+  <p class="text-sm font-semibold text-gray-700 mb-3">Headline</p>
+  <div class="bg-gray-50 rounded-lg p-3 mb-3">
     <p class="text-xs text-gray-400 mb-1">Before</p>
-    <p class="text-sm text-gray-400 italic bg-gray-50 rounded-lg p-3 whitespace-pre-line">{{ data.orig_about }}</p>
+    <p class="text-sm text-gray-500 italic">{{ data.orig_headline }}</p>
   </div>
-  <div>
-    <p class="text-xs text-blue-500 mb-1">After ✓</p>
-    <p id="about-out" class="text-sm text-gray-800 bg-blue-50 rounded-lg p-3 whitespace-pre-line">{{ data.about }}</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="bg-blue-50 rounded-lg p-3">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-blue-500 font-medium">Version A</p>
+        <button onclick="copyText('headline-a', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
+      </div>
+      <p id="headline-a" class="text-sm text-gray-800 font-medium">{{ data.version_a.headline }}</p>
+    </div>
+    <div class="bg-violet-50 rounded-lg p-3">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-violet-500 font-medium">Version B</p>
+        <button onclick="copyText('headline-b', this)" class="text-xs text-violet-600 hover:text-violet-800 font-medium">Copy</button>
+      </div>
+      <p id="headline-b" class="text-sm text-gray-800 font-medium">{{ data.version_b.headline }}</p>
+    </div>
   </div>
 </div>
 
-<!-- Jobs -->
-{% if data.jobs %}
-  {% for job in data.jobs %}
-  <div class="card p-5 mb-4">
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-sm font-semibold text-gray-700">{{ job.title }}</span>
-      <button onclick="copyJobBullets({{ loop.index0 }}, this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy bullets</button>
+<!-- ── ABOUT ─────────────────────────────────────────────────────────────── -->
+<div class="card p-5 mb-4">
+  <p class="text-sm font-semibold text-gray-700 mb-3">About section</p>
+  <div class="bg-gray-50 rounded-lg p-3 mb-3">
+    <p class="text-xs text-gray-400 mb-1">Before</p>
+    <p class="text-sm text-gray-500 italic whitespace-pre-line">{{ data.orig_about }}</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="bg-blue-50 rounded-lg p-3">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-blue-500 font-medium">Version A</p>
+        <button onclick="copyText('about-a', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
+      </div>
+      <p id="about-a" class="text-sm text-gray-800 whitespace-pre-line">{{ data.version_a.about }}</p>
     </div>
+    <div class="bg-violet-50 rounded-lg p-3">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-violet-500 font-medium">Version B</p>
+        <button onclick="copyText('about-b', this)" class="text-xs text-violet-600 hover:text-violet-800 font-medium">Copy</button>
+      </div>
+      <p id="about-b" class="text-sm text-gray-800 whitespace-pre-line">{{ data.version_b.about }}</p>
+    </div>
+  </div>
+</div>
 
-    {% if data.orig_jobs %}
-    <div class="mb-3">
-      <p class="text-xs text-gray-400 mb-2">Before</p>
-      {% set orig = data.orig_jobs[loop.index0] %}
-      {% for line in orig.bullets.split('\n') %}
-        {% if line.strip() %}
-        <p class="text-sm text-gray-400 italic bg-gray-50 rounded p-2 mb-1">{{ line.strip() }}</p>
+<!-- ── JOBS ──────────────────────────────────────────────────────────────── -->
+{% set jobs_a = data.version_a.jobs %}
+{% set jobs_b = data.version_b.jobs %}
+
+{% for orig in data.orig_jobs %}
+{% set idx = loop.index0 %}
+<div class="card p-5 mb-4">
+  <p class="text-sm font-semibold text-gray-700 mb-3">{{ orig.title }}</p>
+  <div class="bg-gray-50 rounded-lg p-3 mb-3">
+    <p class="text-xs text-gray-400 mb-2">Before</p>
+    {% for line in orig.bullets.split('\n') %}
+      {% if line.strip() %}
+      <p class="text-sm text-gray-500 italic mb-1">{{ line.strip() }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="bg-blue-50 rounded-lg p-3">
+      <div class="flex items-center justify-between mb-2">
+        <p class="text-xs text-blue-500 font-medium">Version A</p>
+        <button onclick="copyText('job-a-{{ idx }}', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
+      </div>
+      <div id="job-a-{{ idx }}">
+        {% if jobs_a and idx < jobs_a|length %}
+          {% for bullet in jobs_a[idx].bullets %}
+          <p class="text-sm text-gray-800 mb-1">{{ bullet }}</p>
+          {% endfor %}
         {% endif %}
-      {% endfor %}
+      </div>
     </div>
-    {% endif %}
-
-    <div>
-      <p class="text-xs text-blue-500 mb-2">After ✓</p>
-      <div id="job-bullets-{{ loop.index0 }}">
-        {% for bullet in job.bullets %}
-        <p class="text-sm text-gray-800 bg-blue-50 rounded p-2 mb-1">{{ bullet }}</p>
-        {% endfor %}
+    <div class="bg-violet-50 rounded-lg p-3">
+      <div class="flex items-center justify-between mb-2">
+        <p class="text-xs text-violet-500 font-medium">Version B</p>
+        <button onclick="copyText('job-b-{{ idx }}', this)" class="text-xs text-violet-600 hover:text-violet-800 font-medium">Copy</button>
+      </div>
+      <div id="job-b-{{ idx }}">
+        {% if jobs_b and idx < jobs_b|length %}
+          {% for bullet in jobs_b[idx].bullets %}
+          <p class="text-sm text-gray-800 mb-1">{{ bullet }}</p>
+          {% endfor %}
+        {% endif %}
       </div>
     </div>
   </div>
-  {% endfor %}
-{% endif %}
+</div>
+{% endfor %}
 
-<!-- Tips -->
+<!-- ── TIPS ──────────────────────────────────────────────────────────────── -->
 <div class="card p-5 mb-6 bg-amber-50 border-amber-100">
   <p class="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2">Pro tips before you paste</p>
   <ul class="text-sm text-amber-800 space-y-1 list-disc list-inside">
-    <li>Read the rewrite out loud — does it sound like you?</li>
+    <li>Mix and match — you can take Version A's headline and Version B's bullets.</li>
     <li>Add real numbers wherever you have them — they always beat "significantly".</li>
     <li>Update your LinkedIn URL slug while you're in there (yourname instead of yourname123abc).</li>
     <li>Add a profile photo if you don't have one — profiles with photos get 21× more views.</li>
   </ul>
 </div>
 
-<!-- Share / revisit -->
+<!-- ── FOOTER CTA ─────────────────────────────────────────────────────────── -->
 <div class="text-center space-y-3">
   <p class="text-sm text-gray-500">Want to try a different tone or target role?</p>
   <a href="/" class="btn-primary">Rewrite again — $7</a>
@@ -106,10 +135,6 @@ function copyText(elementId, btn) {
     btn.style.color = '#16a34a';
     setTimeout(() => { btn.textContent = original; btn.style.color = ''; }, 2000);
   });
-}
-
-function copyJobBullets(index, btn) {
-  copyText(`job-bullets-${index}`, btn);
 }
 </script>
 

@@ -6,7 +6,111 @@
   <title>{% block title %}LinkedIn Profile Rewriter{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    /* ── Light mode tokens ───────────────────────────────────────────── */
+    :root {
+      --bg-page:       #f9fafb;
+      --bg-nav:        #ffffff;
+      --bg-card:       #ffffff;
+      --bg-input:      #ffffff;
+      --bg-muted:      #f3f4f6;
+      --bg-blue:       #eff6ff;
+      --bg-violet:     #f5f3ff;
+      --bg-amber:      #fffbeb;
+      --border:        #e5e7eb;
+      --text-primary:  #111827;
+      --text-secondary:#6b7280;
+      --text-muted:    #9ca3af;
+      --text-blue:     #2563eb;
+      --text-violet:   #7c3aed;
+      --text-amber:    #92400e;
+      --text-italic:   #6b7280;
+    }
+
+    /* ── Dark mode tokens ────────────────────────────────────────────── */
+    html.dark {
+      --bg-page:       #0f172a;
+      --bg-nav:        #1e293b;
+      --bg-card:       #1e293b;
+      --bg-input:      #0f172a;
+      --bg-muted:      #334155;
+      --bg-blue:       #1e3a5f;
+      --bg-violet:     #2e1065;
+      --bg-amber:      #292524;
+      --border:        #334155;
+      --text-primary:  #f1f5f9;
+      --text-secondary:#94a3b8;
+      --text-muted:    #64748b;
+      --text-blue:     #60a5fa;
+      --text-violet:   #a78bfa;
+      --text-amber:    #fcd34d;
+      --text-italic:   #94a3b8;
+    }
+
+    /* ── Fluid typography — scales smoothly from mobile to desktop ───── */
+    html {
+      /* Base font: 16px on mobile → 18px on desktop */
+      font-size: clamp(15px, 1.5vw, 18px);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      transition: background .2s, color .2s;
+      line-height: 1.6;
+    }
+
+    /* ── Responsive spacing helpers ──────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    /* Larger tap targets for inputs on mobile */
+    input, textarea, select {
+      background: var(--bg-input) !important;
+      color: var(--text-primary)  !important;
+      border-color: var(--border) !important;
+      font-size: 1rem             !important; /* prevents iOS zoom on focus */
+      padding: 0.625rem 0.75rem   !important;
+      min-height: 2.75rem;
+    }
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted) !important;
+    }
+
+    /* Bump text sizes up a touch globally */
+    .text-xs  { font-size: 0.8rem  !important; }
+    .text-sm  { font-size: 0.9rem  !important; }
+    .text-base{ font-size: 1rem    !important; }
+    .text-lg  { font-size: 1.15rem !important; }
+    .text-xl  { font-size: 1.3rem  !important; }
+    .text-2xl { font-size: 1.6rem  !important; }
+    .text-3xl { font-size: 2rem    !important; }
+    .bg-gray-50  { background: var(--bg-muted) !important; }
+    .bg-white    { background: var(--bg-card)  !important; }
+    .bg-blue-50  { background: var(--bg-blue)  !important; }
+    .bg-violet-50{ background: var(--bg-violet)!important; }
+    .bg-amber-50 { background: var(--bg-amber) !important; }
+    .border-gray-200, .border-gray-300 { border-color: var(--border) !important; }
+    .text-gray-900, .text-gray-800 { color: var(--text-primary)   !important; }
+    .text-gray-700, .text-gray-600 { color: var(--text-secondary)  !important; }
+    .text-gray-500, .text-gray-400 { color: var(--text-muted)      !important; }
+    .text-blue-500, .text-blue-600 { color: var(--text-blue)       !important; }
+    .text-violet-500,.text-violet-600{color: var(--text-violet)    !important; }
+    .text-amber-700, .text-amber-800{ color: var(--text-amber)     !important; }
+    .italic { color: var(--text-italic) !important; }
+
+    input, textarea, select {
+      background: var(--bg-input) !important;
+      color: var(--text-primary)  !important;
+      border-color: var(--border) !important;
+    }
+    input::placeholder, textarea::placeholder {
+      color: var(--text-muted) !important;
+    }
+
     .btn-primary {
       background: #0A66C2; color: #fff;
       padding: 12px 28px; border-radius: 24px;
@@ -15,29 +119,72 @@
       transition: background .15s;
       display: inline-block; text-align: center;
     }
-    .btn-primary:hover { background: #004182; }
+    .btn-primary:hover    { background: #004182; }
     .btn-primary:disabled { background: #8fb8e0; cursor: not-allowed; }
-    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; }
-    .tag { display: inline-block; background: #EFF6FF; color: #1D4ED8;
-           font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+
+    .tag {
+      display: inline-block; background: #EFF6FF; color: #1D4ED8;
+      font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500;
+    }
+
+    /* ── Dark mode toggle button ─────────────────────────────────────── */
+    #dark-toggle {
+      background: none; border: 1px solid var(--border);
+      color: var(--text-secondary); border-radius: 20px;
+      padding: 4px 12px; font-size: 12px; cursor: pointer;
+      transition: all .15s;
+    }
+    #dark-toggle:hover { border-color: var(--text-blue); color: var(--text-blue); }
   </style>
+
+  <!-- Apply saved preference before paint to avoid flash -->
+  <script>
+    if (localStorage.getItem('theme') === 'dark' ||
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
 </head>
-<body class="bg-gray-50 min-h-screen">
+
+<body class="min-h-screen">
 
   <!-- Nav -->
-  <nav class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-    <a href="/" class="font-semibold text-gray-900 text-lg">✍️ ProfileRewrite</a>
-    <span class="text-sm text-gray-500">AI-powered · Instant · $7</span>
+  <nav style="background:var(--bg-nav);border-bottom:1px solid var(--border)"
+       class="px-4 sm:px-6 py-3 flex items-center justify-between">
+    <a href="/" class="font-semibold text-lg" style="color:var(--text-primary)">✍️ ProfileRewrite</a>
+    <div class="flex items-center gap-2 sm:gap-4">
+      <span class="hidden sm:inline text-sm" style="color:var(--text-muted)">AI-powered · Instant · $7</span>
+      <button id="dark-toggle" onclick="toggleDark()">
+        <span id="dark-icon">🌙</span> <span id="dark-label">Dark</span>
+      </button>
+    </div>
   </nav>
 
-  <main class="max-w-2xl mx-auto px-4 py-10">
+  <main class="{% block container_class %}max-w-3xl{% endblock %} mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="text-center text-xs text-gray-400 py-8">
+  <footer class="text-center py-8 px-4" style="color:var(--text-muted);font-size:0.8rem">
     ProfileRewrite is an AI tool — not a career counsellor or recruiter. Results may vary.
     <br>© 2025 ProfileRewrite · <a href="/privacy" class="underline">Privacy</a>
   </footer>
+
+  <script>
+    function toggleDark() {
+      const html  = document.documentElement;
+      const isDark = html.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateToggleLabel(isDark);
+    }
+
+    function updateToggleLabel(isDark) {
+      document.getElementById('dark-icon').textContent  = isDark ? '☀️' : '🌙';
+      document.getElementById('dark-label').textContent = isDark ? 'Light' : 'Dark';
+    }
+
+    // Set correct label on load
+    updateToggleLabel(document.documentElement.classList.contains('dark'));
+  </script>
 
 </body>
 </html>
