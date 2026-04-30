@@ -45,31 +45,37 @@
   </div>
 </div>
 
-<!-- Bullets -->
-{% if data.bullets %}
-<div class="card p-5 mb-4">
-  <div class="flex items-center justify-between mb-3">
-    <span class="text-sm font-semibold text-gray-700">Experience bullets</span>
-    <button onclick="copyText('bullets-out', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy all</button>
-  </div>
+<!-- Jobs -->
+{% if data.jobs %}
+  {% for job in data.jobs %}
+  <div class="card p-5 mb-4">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-sm font-semibold text-gray-700">{{ job.title }}</span>
+      <button onclick="copyJobBullets({{ loop.index0 }}, this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy bullets</button>
+    </div>
 
-  <div class="mb-3">
-    <p class="text-xs text-gray-400 mb-2">Before</p>
-    {% for b in data.orig_bullets.split('\n') %}
-      {% if b.strip() %}
-      <p class="text-sm text-gray-400 italic bg-gray-50 rounded p-2 mb-1">{{ b.strip() }}</p>
-      {% endif %}
-    {% endfor %}
-  </div>
-  <div>
-    <p class="text-xs text-blue-500 mb-2">After ✓</p>
-    <div id="bullets-out">
-      {% for bullet in data.bullets %}
-      <p class="text-sm text-gray-800 bg-blue-50 rounded p-2 mb-1">{{ bullet }}</p>
+    {% if data.orig_jobs %}
+    <div class="mb-3">
+      <p class="text-xs text-gray-400 mb-2">Before</p>
+      {% set orig = data.orig_jobs[loop.index0] %}
+      {% for line in orig.bullets.split('\n') %}
+        {% if line.strip() %}
+        <p class="text-sm text-gray-400 italic bg-gray-50 rounded p-2 mb-1">{{ line.strip() }}</p>
+        {% endif %}
       {% endfor %}
     </div>
+    {% endif %}
+
+    <div>
+      <p class="text-xs text-blue-500 mb-2">After ✓</p>
+      <div id="job-bullets-{{ loop.index0 }}">
+        {% for bullet in job.bullets %}
+        <p class="text-sm text-gray-800 bg-blue-50 rounded p-2 mb-1">{{ bullet }}</p>
+        {% endfor %}
+      </div>
+    </div>
   </div>
-</div>
+  {% endfor %}
 {% endif %}
 
 <!-- Tips -->
@@ -100,6 +106,10 @@ function copyText(elementId, btn) {
     btn.style.color = '#16a34a';
     setTimeout(() => { btn.textContent = original; btn.style.color = ''; }, 2000);
   });
+}
+
+function copyJobBullets(index, btn) {
+  copyText(`job-bullets-${index}`, btn);
 }
 </script>
 

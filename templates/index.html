@@ -62,16 +62,37 @@
     <p class="text-xs text-gray-400 mt-1">Don't have one yet? Write a messy draft — we'll shape it.</p>
   </div>
 
-  <div class="card p-5">
-    <label class="block text-sm font-medium text-gray-700 mb-2">
-      Experience bullets <span class="text-gray-400 font-normal">(up to 3, one per line)</span>
-    </label>
-    <textarea
-      name="bullets" rows="4" maxlength="1500"
-      placeholder="Responsible for managing monthly close process&#10;Helped with budgeting and forecasting&#10;Worked on cross-functional projects"
-      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-    ></textarea>
+  <!-- Dynamic job experience section -->
+  <div id="jobs-container" class="space-y-3">
+    <div class="flex items-center justify-between">
+      <span class="text-sm font-medium text-gray-700">Experience</span>
+      <span class="text-xs text-gray-400">Up to 3 jobs</span>
+    </div>
+
+    <!-- Job 1 (always visible) -->
+    <div class="card p-5 job-block" id="job-1">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-sm font-semibold text-gray-700">Job 1</span>
+      </div>
+      <input
+        type="text" name="job_title_1"
+        placeholder="Job title & company — e.g. Financial Controller at Acme AG"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+        maxlength="150"
+      />
+      <textarea
+        name="job_bullets_1" rows="3" maxlength="1500"
+        placeholder="One bullet per line:&#10;Responsible for monthly close process&#10;Helped with budgeting and forecasting"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+      ></textarea>
+    </div>
   </div>
+
+  <!-- Add job button -->
+  <button type="button" id="add-job-btn"
+    class="w-full border-2 border-dashed border-gray-300 rounded-xl py-3 text-sm text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors">
+    + Add another job
+  </button>
 
   <div class="grid grid-cols-2 gap-4">
     <div class="card p-5">
@@ -104,6 +125,50 @@
 </form>
 
 <script>
+let jobCount = 1;
+const MAX_JOBS = 3;
+
+document.getElementById('add-job-btn').addEventListener('click', function() {
+  if (jobCount >= MAX_JOBS) return;
+  jobCount++;
+
+  const container = document.getElementById('jobs-container');
+  const block = document.createElement('div');
+  block.className = 'card p-5 job-block';
+  block.id = `job-${jobCount}`;
+  block.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-sm font-semibold text-gray-700">Job ${jobCount}</span>
+      <button type="button" onclick="removeJob(${jobCount})" class="text-xs text-red-400 hover:text-red-600">Remove</button>
+    </div>
+    <input
+      type="text" name="job_title_${jobCount}"
+      placeholder="Job title & company"
+      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+      maxlength="150"
+    />
+    <textarea
+      name="job_bullets_${jobCount}" rows="3" maxlength="1500"
+      placeholder="One bullet per line"
+      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+    ></textarea>
+  `;
+  container.appendChild(block);
+
+  if (jobCount >= MAX_JOBS) {
+    document.getElementById('add-job-btn').style.display = 'none';
+  }
+});
+
+function removeJob(n) {
+  const block = document.getElementById(`job-${n}`);
+  if (block) block.remove();
+  if (jobCount >= MAX_JOBS) {
+    document.getElementById('add-job-btn').style.display = '';
+  }
+  jobCount = Math.max(1, jobCount - 1);
+}
+
 document.getElementById('rewrite-form').addEventListener('submit', function() {
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
