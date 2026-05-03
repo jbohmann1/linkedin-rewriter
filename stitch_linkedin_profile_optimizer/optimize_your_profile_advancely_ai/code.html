@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#a9c7ff",
+                    "surface-container": "#eceef0",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed": "#002114",
+                    "secondary-fixed": "#85f8c4",
+                    "secondary": "#006c4a",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "on-surface-variant": "#424750",
+                    "on-primary-fixed-variant": "#0c4687",
+                    "tertiary-fixed": "#d3e4fe",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "tertiary": "#1d2d41",
+                    "secondary-container": "#82f5c1",
+                    "surface-tint": "#2f5ea1",
+                    "on-primary-fixed": "#001b3d",
+                    "on-secondary-container": "#00714e",
+                    "surface": "#f7f9fb",
+                    "on-surface": "#191c1e",
+                    "on-primary-container": "#84aff7",
+                    "on-secondary-fixed-variant": "#005137",
+                    "surface-variant": "#e0e3e5",
+                    "on-error": "#ffffff",
+                    "on-background": "#191c1e",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "outline-variant": "#c3c6d2",
+                    "surface-container-high": "#e6e8ea",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#68dba9",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "outline": "#737781",
+                    "inverse-on-surface": "#eff1f3",
+                    "primary-fixed": "#d6e3ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "gutter": "24px",
+                    "lg": "40px",
+                    "sm": "12px",
+                    "md": "24px",
+                    "xs": "4px",
+                    "xl": "64px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "body-md": ["Inter"],
+                    "h1": ["Inter"],
+                    "h3": ["Inter"],
+                    "h2": ["Inter"],
+                    "button": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h1": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h3": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600"}],
+                    "h2": ["30px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "button": ["15px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f7f9fb;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Top Navigation Shell -->
+<header class="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm sticky top-0 z-50 w-full">
+<div class="flex items-center justify-between px-8 h-16 w-full max-w-screen-2xl mx-auto">
+<div class="text-xl font-bold text-[#004182] dark:text-white tracking-tighter font-h3">Advancely AI</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-['Inter'] text-sm font-medium tracking-tight text-[#004182] dark:text-blue-400 font-bold border-b-2 border-[#004182] dark:border-blue-400 pb-1" href="#">Platform</a>
+<a class="font-['Inter'] text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-[#004182] dark:hover:text-white transition-all duration-200" href="#">How it Works</a>
+<a class="font-['Inter'] text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-[#004182] dark:hover:text-white transition-all duration-200" href="#">Pricing</a>
+<a class="font-['Inter'] text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-[#004182] dark:hover:text-white transition-all duration-200" href="#">Success Stories</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="font-['Inter'] text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all duration-200 px-4 py-2 rounded-lg">Sign In</button>
+<button class="bg-secondary text-on-secondary px-6 py-2.5 rounded-lg font-button active:opacity-80 transition-opacity">Optimize Profile</button>
+</div>
+</div>
+</header>
+<main class="max-w-[800px] mx-auto px-6 py-16">
+<!-- Progress Indicator -->
+<div class="mb-12">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Step 1 of 2</span>
+<span class="font-label-caps text-label-caps text-outline">Profile Data Extraction</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full w-1/2 bg-secondary rounded-full"></div>
+</div>
+</div>
+<!-- Header -->
+<div class="mb-12 text-center md:text-left">
+<h1 class="font-h1 text-h1 text-primary mb-4">Refine Your Professional Identity</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Input your current LinkedIn details below. Our AI will analyze your experience and generate high-impact, keyword-optimized content tailored to your career goals.</p>
+</div>
+<!-- Input Form Section -->
+<section class="bg-surface-container-lowest border border-outline-variant p-8 md:p-12 rounded-xl shadow-sm">
+<form class="space-y-10">
+<!-- Current Headline -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<label class="font-label-caps text-label-caps text-primary uppercase tracking-wider" for="headline">Current Headline</label>
+<span class="text-[11px] text-outline font-medium">Character Count: 0/220</span>
+</div>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-4 text-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/50" id="headline" placeholder="e.g. Senior Product Manager at TechCorp | SaaS &amp; Fintech Specialist" type="text"/>
+<p class="text-[12px] text-on-surface-variant italic">Your current headline as it appears right under your name.</p>
+</div>
+<!-- About Section -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<label class="font-label-caps text-label-caps text-primary uppercase tracking-wider" for="about">About Section</label>
+<span class="text-[11px] text-outline font-medium">Words: 0/2600</span>
+</div>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-4 text-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/50 resize-none" id="about" placeholder="Paste your current LinkedIn summary or a brief bio here..." rows="6"></textarea>
+<p class="text-[12px] text-on-surface-variant">Focus on your mission, core values, and top achievements.</p>
+</div>
+<!-- Experience/Job Bullets -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<label class="font-label-caps text-label-caps text-primary uppercase tracking-wider" for="experience">Experience &amp; Job Bullets</label>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-secondary">info</span>
+<span class="text-[11px] text-outline font-medium">Recommended: 3-5 bullets per role</span>
+</div>
+</div>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-4 text-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline/50 resize-none" id="experience" placeholder="Role: Senior Developer
+- Led team of 5 to launch v2 of core platform
+- Reduced latency by 40% using optimized caching..." rows="8"></textarea>
+</div>
+<!-- Action Bar -->
+<div class="pt-6 border-t border-outline-variant flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex gap-3">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-surface-container rounded-full">
+<span class="material-symbols-outlined text-[18px] text-primary">auto_fix_high</span>
+<span class="font-label-caps text-[11px] text-primary">Professional Tone</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-high rounded-full hover:bg-tertiary-fixed transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[18px] text-tertiary">tune</span>
+<span class="font-label-caps text-[11px] text-tertiary">Adjust Style</span>
+</div>
+</div>
+<button class="w-full md:w-auto bg-secondary text-on-secondary px-10 py-4 rounded-xl font-button text-lg flex items-center justify-center gap-3 hover:shadow-lg active:scale-[0.98] transition-all" type="submit">
+                        Generate My New Profile
+                        <span class="material-symbols-outlined" data-weight="fill">arrow_forward</span>
+</button>
+</div>
+</form>
+</section>
+<!-- Contextual Help / Tips Grid -->
+<div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 bg-white border border-outline-variant rounded-xl">
+<span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">bolt</span>
+<h4 class="font-h3 text-[18px] text-primary mb-2">Be Specific</h4>
+<p class="text-body-sm text-on-surface-variant">AI performs best when you provide concrete metrics and specific project outcomes.</p>
+</div>
+<div class="p-6 bg-white border border-outline-variant rounded-xl">
+<span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">target</span>
+<h4 class="font-h3 text-[18px] text-primary mb-2">Keyword Focus</h4>
+<p class="text-body-sm text-on-surface-variant">Include industry-standard tools and methodologies to improve your search visibility.</p>
+</div>
+<div class="p-6 bg-white border border-outline-variant rounded-xl">
+<span class="material-symbols-outlined text-primary mb-4" style="font-size: 32px;">verified</span>
+<h4 class="font-h3 text-[18px] text-primary mb-2">Verified Standard</h4>
+<p class="text-body-sm text-on-surface-variant">Our templates follow the exact formatting preferred by top executive recruiters.</p>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 mt-24">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 py-12 gap-6 max-w-screen-2xl mx-auto">
+<div class="flex flex-col gap-2">
+<span class="font-bold text-slate-900 dark:text-white font-h3">Advancely AI</span>
+<p class="font-['Inter'] text-xs text-slate-500 dark:text-slate-400">© 2024 Advancely AI. The professional standard for career advancement.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-['Inter'] text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Privacy Policy</a>
+<a class="font-['Inter'] text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Terms of Service</a>
+<a class="font-['Inter'] text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Security</a>
+<a class="font-['Inter'] text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors" href="#">Help Center</a>
+</div>
+</div>
+</footer>
+</body></html>
