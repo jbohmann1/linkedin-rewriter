@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}ProfileRewrite — Transform your LinkedIn profile in seconds{% endblock %}
+{% block container_class %}{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="relative pt-20 pb-32 px-6 sm:px-8 overflow-hidden bg-background">
+  <div class="max-w-screen-xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+
+    <!-- Left: copy -->
+    <div class="flex-1 text-center lg:text-left">
+      <span class="inline-block bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-label-caps uppercase tracking-widest mb-6">
+        AI-Powered Career Growth
+      </span>
+      <h1 class="text-h1 font-bold text-primary mb-6 leading-tight">
+        Transform your LinkedIn<br class="hidden sm:block"/> profile in seconds.
+      </h1>
+      <p class="text-body-lg text-on-surface-variant mb-10 max-w-xl mx-auto lg:mx-0">
+        Our AI crafts professional headlines, about sections, and job bullets that get you noticed by top recruiters.
+      </p>
+      <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+        <a href="/optimize"
+          class="bg-secondary text-on-secondary px-8 py-4 rounded-xl text-btn text-lg flex items-center gap-2 hover:shadow-lg transition-all active:opacity-80 font-medium">
+          Optimize My Profile
+          <span class="material-symbols-outlined">trending_up</span>
+        </a>
+        <a href="#how-it-works"
+          class="border-2 border-primary text-primary px-8 py-4 rounded-xl text-btn text-lg hover:bg-primary/5 transition-colors font-medium">
+          How it Works
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: static preview card -->
+    <div class="flex-1 w-full relative">
+      <div class="bg-white rounded-2xl shadow-xl border border-outline-variant overflow-hidden">
+        <!-- Mac-style chrome -->
+        <div class="bg-primary-container px-4 py-3 flex items-center justify-between">
+          <div class="flex gap-2">
+            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+          </div>
+          <span class="text-on-primary-container text-body-sm font-medium">ProfileRewrite Smart Editor</span>
+          <div class="w-16"></div>
+        </div>
+        <!-- Before / After preview — static -->
+        <div class="p-6 grid grid-cols-2 gap-4 divide-x divide-outline-variant">
+          <div class="space-y-3 pr-4">
+            <span class="text-label-caps text-outline uppercase">Current Profile</span>
+            <div class="p-3 bg-surface rounded-lg border border-outline-variant text-body-sm text-on-surface-variant min-h-[140px]">
+              Responsible for team management and project delivery. Worked on various software projects using Java and SQL. Helped improve site speed.
+            </div>
+            <p class="text-xs text-error flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:15px">warning</span>
+              Lacks specific metrics and impact verbs
+            </p>
+          </div>
+          <div class="space-y-3 pl-4">
+            <span class="text-label-caps text-primary uppercase">New Profile</span>
+            <div class="p-3 bg-primary-fixed/40 rounded-lg border border-primary/20 text-body-sm text-primary min-h-[140px]">
+              <span class="bg-primary/10 px-1 rounded">Orchestrated</span> cross-functional teams of 12 to deliver high-priority SaaS solutions. Optimized legacy backend architecture resulting in a <span class="bg-primary/10 px-1 rounded">40% reduction in latency</span>.
+            </div>
+            <p class="text-xs text-secondary flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:15px">check_circle</span>
+              Quantified achievements and strong action verbs
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Decorative blob -->
+      <div class="absolute -top-10 -right-10 w-64 h-64 bg-secondary-container/20 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Features bento ────────────────────────────────────────────────────── -->
+<section class="py-24 px-6 sm:px-8 bg-surface-container-low">
+  <div class="max-w-screen-xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-h2 font-semibold text-primary mb-4">Elevate every section of your profile</h2>
+      <p class="text-on-surface-variant max-w-xl mx-auto">Stop struggling with blank pages. Let our career-trained AI handle the heavy lifting of professional branding.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+      <!-- Feature 1 — headline carousel -->
+      <div class="md:col-span-8 bg-white p-8 rounded-2xl border border-outline-variant shadow-card hover:shadow-card-hover transition-shadow">
+        <span class="material-symbols-outlined text-primary mb-4 text-4xl">edit_square</span>
+        <h3 class="text-h3 font-semibold mb-3">Clean up your Headline</h3>
+        <p class="text-on-surface-variant mb-6">Replace generic titles with high-impact, keyword-optimized headlines that rank you higher in recruiter search results.</p>
+
+        <!-- Carousel example box -->
+        <div class="bg-surface rounded-lg border border-outline-variant/40 p-4">
+          <p id="headline-example" class="italic text-body-sm text-primary min-h-[48px]"></p>
+          <p id="headline-industry" class="text-label-caps text-outline uppercase tracking-widest mt-3"></p>
+        </div>
+      </div>
+
+      <!-- Feature 2 — narrow, dark -->
+      <div class="md:col-span-4 bg-primary text-on-primary p-8 rounded-2xl shadow-card">
+        <span class="material-symbols-outlined text-on-primary-container mb-4 text-4xl">verified_user</span>
+        <h3 class="text-h3 font-semibold mb-3">Perfect your About section</h3>
+        <p class="opacity-80">Craft a compelling narrative that highlights your unique value and career trajectory — in your voice, only sharper.</p>
+      </div>
+
+      <!-- Feature 3 — narrow, green -->
+      <div class="md:col-span-4 bg-secondary-container p-8 rounded-2xl border border-outline-variant shadow-card">
+        <span class="material-symbols-outlined text-on-secondary-container mb-4 text-4xl">list_alt</span>
+        <h3 class="text-h3 font-semibold text-on-secondary-container mb-3">Impactful Job Bullets</h3>
+        <p class="text-on-secondary-container/80">Turn tasks into achievements. Every bullet starts with a verb that makes a recruiter lean forward.</p>
+      </div>
+
+      <!-- Feature 4 — two versions carousel -->
+      <div class="md:col-span-8 bg-white p-8 rounded-2xl border border-outline-variant shadow-card">
+        <h3 class="text-h3 font-semibold mb-3">Two versions, one price</h3>
+        <p class="text-on-surface-variant mb-6">We generate two independent rewrites simultaneously. Pick your favourite headline from A, the about from B, mix and match bullets. You stay in control.</p>
+        <div class="rounded-xl border border-outline-variant/40 overflow-hidden">
+          <div class="grid grid-cols-2 divide-x divide-outline-variant/40">
+            <div class="bg-blue-50 p-3 min-h-[72px]">
+              <p class="text-label-caps text-blue-600 uppercase mb-2">Version A</p>
+              <p id="version-a-text" class="text-body-sm text-slate-700"></p>
+            </div>
+            <div class="bg-violet-50 p-3 min-h-[72px]">
+              <p class="text-label-caps text-violet-600 uppercase mb-2">Version B</p>
+              <p id="version-b-text" class="text-body-sm text-slate-700"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ───────────────────────────────────────────────────────── -->
+<section id="how-it-works" class="py-24 px-6 sm:px-8 bg-white">
+  <div class="max-w-screen-xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-h2 font-semibold text-primary">Your path to a better profile</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+      <div class="relative text-center">
+        <div class="w-16 h-16 bg-primary-fixed text-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">1</div>
+        <h3 class="text-h3 font-semibold mb-2">Paste your info</h3>
+        <p class="text-on-surface-variant">Fill in your current headline, about section, and job bullets. Add up to 3 roles.</p>
+        <div class="hidden md:block absolute top-8 left-[60%] w-[80%] h-[2px] bg-outline-variant -z-10"></div>
+      </div>
+      <div class="relative text-center">
+        <div class="w-16 h-16 bg-primary-fixed text-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">2</div>
+        <h3 class="text-h3 font-semibold mb-2">AI rewrites in seconds</h3>
+        <p class="text-on-surface-variant">Our career-trained AI runs two independent rewrites simultaneously — optimized for impact and discoverability.</p>
+        <div class="hidden md:block absolute top-8 left-[60%] w-[80%] h-[2px] bg-outline-variant -z-10"></div>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 bg-secondary-fixed text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">3</div>
+        <h3 class="text-h3 font-semibold mb-2">Copy your polished profile</h3>
+        <p class="text-on-surface-variant">Compare versions A and B side by side. Mix and match the best parts, then paste straight into LinkedIn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA strip ─────────────────────────────────────────────────────────── -->
+<section class="py-20 px-6 sm:px-8 bg-surface-container">
+  <div class="max-w-3xl mx-auto text-center">
+    <h2 class="text-h2 font-semibold text-primary mb-4">Ready to stand out?</h2>
+    <p class="text-body-lg text-on-surface-variant mb-8">One-time payment. Two rewrites. Instant delivery. No account needed.</p>
+    <a href="/optimize"
+      class="inline-flex items-center gap-3 bg-secondary text-on-secondary px-10 py-4 rounded-full text-btn text-lg hover:opacity-90 transition-opacity font-medium shadow-lg">
+      Start Rewriting Now
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </a>
+    <p class="text-body-sm text-outline mt-4">Secured by Stripe · CHF 5 one-time · Takes 30 seconds</p>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const EXAMPLES = [
+  { industry:"Finance",        before:"Financial Controller | Excel | Team Leader", after:"Process Optimizer & Finance Strategist | Turning Data Into Decisions | 6+ Years", va:"Process Optimizer & Finance Strategist | Turning Data Into Decisions", vb:"Financial Controller → Strategic Finance Lead | Data-Driven Planning | 6+ Years" },
+  { industry:"Communications", before:"Communications Manager at NGO", after:"Global Storyteller & Media Strategist | Turning Complex Issues Into Public Narratives", va:"Global Storyteller & Media Strategist | Advocacy Communications | 10+ Languages Reached", vb:"Communications Lead | Public Narrative & Crisis Messaging | NGO & International Affairs" },
+  { industry:"Software",       before:"Software Developer | Java | SQL", after:"Backend Engineer | High-Traffic Systems & API Design | Scaling Products from 0 to 1M Users", va:"Backend Engineer | High-Traffic Systems & API Design | Scaling from 0 to 1M Users", vb:"Software Engineer | Java & Distributed Systems | Building Products That Don’t Break" },
+  { industry:"Marketing",      before:"Marketing Specialist | Social Media | Content", after:"Growth Marketer | B2B Demand Generation & Brand Strategy | $2M+ Pipeline Influenced", va:"Growth Marketer | B2B Demand Generation & Brand Strategy | $2M+ Pipeline Influenced", vb:"Marketing Lead | Content-Driven Growth & Campaign Strategy | SaaS & Consumer Brands" },
+  { industry:"HR & People",    before:"HR Manager | Recruitment | Employee Relations", after:"People & Culture Lead | Building Teams That Stay | Talent Strategy Across 5 Countries", va:"People & Culture Lead | Building Teams That Stay | Talent Strategy Across 5 Countries", vb:"HR Strategist | Retention-First Hiring & Organizational Design | Scale-Up Experience" },
+];
+
+const DURATION = 7000;
+const FADE = 600;
+
+function crossfade(el, newText) {
+  if (!el) return;
+  el.style.transition = 'opacity ' + FADE + 'ms ease';
+  el.style.opacity = '0';
+  setTimeout(() => { el.textContent = newText; el.style.opacity = '1'; }, FADE);
+}
+
+let idx = 0;
+function next() {
+  idx = (idx + 1) % EXAMPLES.length;
+  const ex = EXAMPLES[idx];
+  crossfade(document.getElementById('headline-example'), '“' + ex.before + '” → “' + ex.after + '”');
+  crossfade(document.getElementById('headline-industry'), ex.industry);
+  crossfade(document.getElementById('version-a-text'), '“' + ex.va + '”');
+  crossfade(document.getElementById('version-b-text'), '“' + ex.vb + '”');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const ex0 = EXAMPLES[0];
+  const h = document.getElementById('headline-example');
+  const ind = document.getElementById('headline-industry');
+  const va = document.getElementById('version-a-text');
+  const vb = document.getElementById('version-b-text');
+  [h, ind, va, vb].forEach(el => { if (el) el.style.transition = 'opacity ' + FADE + 'ms ease'; });
+  if (h)   h.textContent   = '“' + ex0.before + '” → “' + ex0.after + '”';
+  if (ind) ind.textContent = ex0.industry;
+  if (va)  va.textContent  = '“' + ex0.va + '”';
+  if (vb)  vb.textContent  = '“' + ex0.vb + '”';
+  setInterval(next, DURATION);
+});
+</script>
+{% endblock %}

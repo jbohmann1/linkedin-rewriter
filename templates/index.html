@@ -1,129 +1,175 @@
 {% extends "base.html" %}
-{% block title %}LinkedIn Profile Rewriter — Sound like yourself, only better{% endblock %}
+{% block title %}Optimize Your Profile — ProfileRewrite{% endblock %}
+{% block container_class %}{% endblock %}
 
 {% block content %}
+<div class="max-w-[860px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
 
-<!-- Hero -->
-<div class="text-center mb-10">
-  <h1 class="text-3xl font-bold text-gray-900 mb-3">Your LinkedIn profile, rewritten in 30 seconds</h1>
-  <p class="text-gray-500 text-lg">Paste your current profile. Get a stronger version that sounds like you — just clearer, sharper, and recruiter-ready.</p>
-</div>
-
-<!-- Before / After example -->
-<div class="card p-5 mb-8 bg-blue-50 border-blue-100">
-  <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-3">Example transformation</p>
-  <div class="grid grid-cols-2 gap-4">
-    <div>
-      <p class="text-xs text-gray-400 font-medium mb-1">Before</p>
-      <p class="text-sm text-gray-600 italic">"Results-driven professional with a passion for helping teams achieve goals in fast-paced environments."</p>
+  <!-- Progress indicator -->
+  <div class="mb-10">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-label-caps text-primary uppercase tracking-widest">Step 1 of 2</span>
+      <span class="text-label-caps text-outline">Profile Data Extraction</span>
     </div>
-    <div>
-      <p class="text-xs text-blue-600 font-medium mb-1">After ✓</p>
-      <p class="text-sm text-gray-800">"Financial controller turned product strategist — I turn messy spreadsheets and stakeholder chaos into decisions that actually ship."</p>
+    <div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+      <div class="h-full w-1/2 bg-secondary rounded-full"></div>
     </div>
   </div>
-</div>
 
-{% if error %}
-<div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">
-  {{ error }}
-</div>
-{% endif %}
-
-{% if request.query_params.get('cancelled') %}
-<div class="bg-amber-50 border border-amber-200 text-amber-700 rounded-xl p-4 mb-6 text-sm">
-  Payment cancelled — your rewrite is still waiting. Fill in the form again to retry.
-</div>
-{% endif %}
-
-<!-- Form -->
-<form method="POST" action="/generate" id="rewrite-form" class="space-y-5">
-
-  <div class="card p-5">
-    <label class="block text-sm font-medium text-gray-700 mb-1">
-      Current headline <span class="text-gray-400 font-normal">(the line under your name)</span>
-    </label>
-    <input
-      type="text" name="headline" required maxlength="300"
-      placeholder="e.g. Financial Controller | Excel | Team Leader"
-      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
+  <!-- Header -->
+  <div class="mb-10">
+    <h1 class="text-h1 font-bold text-primary mb-4">Refine Your Professional Identity</h1>
+    <p class="text-body-lg text-on-surface-variant max-w-2xl">
+      Input your current LinkedIn details below. Our AI will generate two high-impact rewrites tailored to your career goals — you pick the best parts from each.
+    </p>
   </div>
 
-  <div class="card p-5">
-    <label class="block text-sm font-medium text-gray-700 mb-1">
-      About section <span class="text-gray-400 font-normal">(paste your current text, or write a rough draft)</span>
-    </label>
-    <textarea
-      name="about" required rows="5" maxlength="3000"
-      placeholder="Paste your current About section here…"
-      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-    ></textarea>
-    <p class="text-xs text-gray-400 mt-1">Don't have one yet? Write a messy draft — we'll shape it.</p>
+  {% if error %}
+  <div class="mb-6 flex items-start gap-3 bg-error-container border border-error/20 text-on-error-container rounded-xl p-4">
+    <span class="material-symbols-outlined text-error mt-0.5">error</span>
+    <p class="text-body-sm">{{ error }}</p>
   </div>
+  {% endif %}
 
-  <!-- Dynamic job experience section -->
-  <div id="jobs-container" class="space-y-3">
-    <div class="flex items-center justify-between">
-      <span class="text-sm font-medium text-gray-700">Experience</span>
-      <span class="text-xs text-gray-400">Up to 3 jobs</span>
-    </div>
+  {% if request.query_params.get('cancelled') %}
+  <div class="mb-6 flex items-start gap-3 bg-surface-container border border-outline-variant rounded-xl p-4">
+    <span class="material-symbols-outlined text-outline mt-0.5">info</span>
+    <p class="text-body-sm text-on-surface-variant">Payment cancelled — your rewrite is ready when you are. Fill in the form again to retry.</p>
+  </div>
+  {% endif %}
 
-    <!-- Job 1 (always visible) -->
-    <div class="card p-5 job-block" id="job-1">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-sm font-semibold text-gray-700">Job 1</span>
+  <!-- Form card -->
+  <section class="bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-card p-6 sm:p-10">
+    <form method="POST" action="/generate" id="rewrite-form" class="space-y-8">
+
+      <!-- Headline -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-end">
+          <label for="headline" class="text-label-caps text-primary uppercase tracking-wider">Current Headline</label>
+          <span id="headline-count" class="text-[11px] text-outline font-medium">0 / 220</span>
+        </div>
+        <input
+          type="text" id="headline" name="headline" required maxlength="220"
+          placeholder="e.g. Financial Controller | Excel | Team Leader"
+          value="{{ prefill.headline if prefill else '' }}"
+          oninput="document.getElementById('headline-count').textContent=this.value.length+' / 220'"
+          class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3.5 text-body-md placeholder:text-outline/50 transition-all"
+        />
+        <p class="text-[12px] text-on-surface-variant italic">Your current headline as it appears right under your name.</p>
       </div>
-      <input
-        type="text" name="job_title_1"
-        placeholder="Job title & company — e.g. Financial Controller at Acme AG"
-        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-        maxlength="150"
-      />
-      <textarea
-        name="job_bullets_1" rows="3" maxlength="1500"
-        placeholder="One bullet per line:&#10;Responsible for monthly close process&#10;Helped with budgeting and forecasting"
-        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-      ></textarea>
+
+      <!-- About -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-end">
+          <label for="about" class="text-label-caps text-primary uppercase tracking-wider">About Section</label>
+          <span id="about-count" class="text-[11px] text-outline font-medium">0 / 2000</span>
+        </div>
+        <textarea
+          id="about" name="about" required rows="6" maxlength="2000"
+          placeholder="Paste your current LinkedIn summary or a brief bio here..."
+          oninput="document.getElementById('about-count').textContent=this.value.length+' / 2000'"
+          class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3.5 text-body-md placeholder:text-outline/50 resize-none transition-all"
+        >{{ prefill.about if prefill else '' }}</textarea>
+        <p class="text-[12px] text-on-surface-variant">Don't have one yet? Write a rough draft — we'll shape it into all four required sections.</p>
+      </div>
+
+      <!-- Dynamic job cards -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-label-caps text-primary uppercase tracking-wider">Experience &amp; Job Bullets</label>
+          <div class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-secondary" style="font-size:16px">info</span>
+            <span class="text-[11px] text-outline font-medium">Up to 3 jobs</span>
+          </div>
+        </div>
+
+        <div id="jobs-container" class="space-y-4">
+          <!-- Job 1 — always visible -->
+          <div class="job-block bg-surface border border-outline-variant rounded-xl p-5" id="job-1">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-label-caps text-primary uppercase tracking-wider">Job 1</span>
+            </div>
+            <input
+              type="text" name="job_title_1"
+              placeholder="Job title & company — e.g. Financial Controller at Acme AG"
+              value="{{ prefill.jobs[0].title if prefill and prefill.jobs else '' }}"
+              maxlength="150"
+              class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 mb-3 transition-all"
+            />
+            <textarea
+              name="job_bullets_1" rows="4" maxlength="800"
+              placeholder="One bullet per line:&#10;Responsible for monthly close process&#10;Helped with budgeting and forecasting&#10;Worked on cross-functional projects"
+              class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 resize-none transition-all"
+            >{{ prefill.jobs[0].bullets if prefill and prefill.jobs else '' }}</textarea>
+          </div>
+        </div>
+
+        <!-- Add job button -->
+        <button type="button" id="add-job-btn"
+          class="w-full border-2 border-dashed border-outline-variant rounded-xl py-3.5 text-body-sm text-outline hover:border-secondary hover:text-secondary transition-colors flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:18px">add_circle</span>
+          Add another job
+        </button>
+      </div>
+
+      <!-- Target role + tone -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label for="target_role" class="text-label-caps text-primary uppercase tracking-wider">Target Role / Industry</label>
+          <input
+            type="text" id="target_role" name="target_role" required maxlength="100"
+            placeholder="e.g. Project Manager at an architecture firm"
+            value="{{ prefill.target_role if prefill else '' }}"
+            class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3.5 text-body-sm placeholder:text-outline/50 transition-all"
+          />
+        </div>
+        <div class="space-y-2">
+          <label for="tone" class="text-label-caps text-primary uppercase tracking-wider">Tone</label>
+          <select id="tone" name="tone"
+            class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3.5 text-body-sm transition-all">
+            <option value="professional" {% if prefill and prefill.tone == 'professional' %}selected{% endif %}>Professional</option>
+            <option value="conversational" {% if prefill and prefill.tone == 'conversational' %}selected{% endif %}>Conversational</option>
+            <option value="bold" {% if prefill and prefill.tone == 'bold' %}selected{% endif %}>Bold</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div class="pt-6 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-5">
+        <p class="text-body-sm text-outline order-2 sm:order-1">Secured by Stripe · Instant delivery · No account needed</p>
+        <button type="submit" id="submit-btn"
+          class="order-1 sm:order-2 w-full sm:w-auto bg-secondary text-on-secondary px-10 py-4 rounded-xl text-btn text-lg flex items-center justify-center gap-3 hover:shadow-lg active:scale-[0.98] transition-all font-medium whitespace-nowrap">
+          Generate My Profile — CHF 5
+          <span class="material-symbols-outlined whitespace-nowrap">arrow_forward</span>
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+  <!-- Tips grid -->
+  <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <div class="p-6 bg-white border border-outline-variant rounded-xl shadow-card">
+      <span class="material-symbols-outlined text-primary mb-3" style="font-size:32px">bolt</span>
+      <h4 class="text-h3 text-[18px] font-semibold text-primary mb-2">Be Specific</h4>
+      <p class="text-body-sm text-on-surface-variant">AI performs best when you provide concrete metrics and specific project outcomes.</p>
+    </div>
+    <div class="p-6 bg-white border border-outline-variant rounded-xl shadow-card">
+      <span class="material-symbols-outlined text-primary mb-3" style="font-size:32px">target</span>
+      <h4 class="text-h3 text-[18px] font-semibold text-primary mb-2">Keyword Focus</h4>
+      <p class="text-body-sm text-on-surface-variant">Include industry-standard tools and methodologies to improve your search visibility.</p>
+    </div>
+    <div class="p-6 bg-white border border-outline-variant rounded-xl shadow-card">
+      <span class="material-symbols-outlined text-primary mb-3" style="font-size:32px">verified</span>
+      <h4 class="text-h3 text-[18px] font-semibold text-primary mb-2">Two Versions</h4>
+      <p class="text-body-sm text-on-surface-variant">You'll receive two independent rewrites to compare and mix — for the price of one.</p>
     </div>
   </div>
 
-  <!-- Add job button -->
-  <button type="button" id="add-job-btn"
-    class="w-full border-2 border-dashed border-gray-300 rounded-xl py-3 text-sm text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors">
-    + Add another job
-  </button>
+</div>
+{% endblock %}
 
-  <div class="grid grid-cols-2 gap-4">
-    <div class="card p-5">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Target role / industry</label>
-      <input
-        type="text" name="target_role" required maxlength="100"
-        placeholder="e.g. Project Manager at an architecture firm"
-        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
-
-    <div class="card p-5">
-      <label class="block text-sm font-medium text-gray-700 mb-1">Tone</label>
-      <select name="tone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-        <option value="professional">Professional</option>
-        <option value="conversational">Conversational</option>
-        <option value="bold">Bold</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="text-center pt-2">
-    <button type="submit" class="btn-primary w-full max-w-xs" id="submit-btn">
-      Rewrite my profile — $7 →
-    </button>
-    <p class="text-xs text-gray-400 mt-3">Secured by Stripe · Instant delivery · No account needed</p>
-  </div>
-
-</form>
-
+{% block extra_scripts %}
 <script>
 let jobCount = 1;
 const MAX_JOBS = 3;
@@ -131,49 +177,75 @@ const MAX_JOBS = 3;
 document.getElementById('add-job-btn').addEventListener('click', function() {
   if (jobCount >= MAX_JOBS) return;
   jobCount++;
-
   const container = document.getElementById('jobs-container');
   const block = document.createElement('div');
-  block.className = 'card p-5 job-block';
-  block.id = `job-${jobCount}`;
+  block.className = 'job-block bg-surface border border-outline-variant rounded-xl p-5';
+  block.id = 'job-' + jobCount;
   block.innerHTML = `
     <div class="flex items-center justify-between mb-3">
-      <span class="text-sm font-semibold text-gray-700">Job ${jobCount}</span>
-      <button type="button" onclick="removeJob(${jobCount})" class="text-xs text-red-400 hover:text-red-600">Remove</button>
+      <span class="text-label-caps text-primary uppercase tracking-wider">Job ${jobCount}</span>
+      <button type="button" onclick="removeJob(${jobCount})"
+        class="flex items-center gap-1 text-[12px] text-error hover:text-red-700 transition-colors">
+        <span class="material-symbols-outlined" style="font-size:15px">remove_circle</span> Remove
+      </button>
     </div>
-    <input
-      type="text" name="job_title_${jobCount}"
+    <input type="text" name="job_title_${jobCount}"
       placeholder="Job title & company"
-      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
       maxlength="150"
-    />
-    <textarea
-      name="job_bullets_${jobCount}" rows="3" maxlength="1500"
+      class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 mb-3 transition-all" />
+    <textarea name="job_bullets_${jobCount}" rows="4" maxlength="800"
       placeholder="One bullet per line"
-      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-    ></textarea>
+      class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 resize-none transition-all"></textarea>
   `;
   container.appendChild(block);
-
-  if (jobCount >= MAX_JOBS) {
-    document.getElementById('add-job-btn').style.display = 'none';
-  }
+  if (jobCount >= MAX_JOBS) document.getElementById('add-job-btn').style.display = 'none';
 });
 
 function removeJob(n) {
-  const block = document.getElementById(`job-${n}`);
-  if (block) block.remove();
-  if (jobCount >= MAX_JOBS) {
-    document.getElementById('add-job-btn').style.display = '';
-  }
+  const el = document.getElementById('job-' + n);
+  if (el) el.remove();
   jobCount = Math.max(1, jobCount - 1);
+  document.getElementById('add-job-btn').style.display = '';
 }
 
-document.getElementById('rewrite-form').addEventListener('submit', function() {
+// Restore additional jobs from prefill if error occurred
+{% if prefill and prefill.jobs and prefill.jobs|length > 1 %}
+document.addEventListener('DOMContentLoaded', function() {
+  const extraJobs = {{ prefill.jobs[1:] | tojson }};
+  extraJobs.forEach(function(job) {
+    if (jobCount >= MAX_JOBS) return;
+    jobCount++;
+    const container = document.getElementById('jobs-container');
+    const block = document.createElement('div');
+    block.className = 'job-block bg-surface border border-outline-variant rounded-xl p-5';
+    block.id = 'job-' + jobCount;
+    block.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-label-caps text-primary uppercase tracking-wider">Job ${jobCount}</span>
+        <button type="button" onclick="removeJob(${jobCount})"
+          class="flex items-center gap-1 text-[12px] text-error hover:text-red-700 transition-colors">
+          <span class="material-symbols-outlined" style="font-size:15px">remove_circle</span> Remove
+        </button>
+      </div>
+      <input type="text" name="job_title_${jobCount}"
+        value="${job.title || ''}"
+        placeholder="Job title & company" maxlength="150"
+        class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 mb-3 transition-all" />
+      <textarea name="job_bullets_${jobCount}" rows="4" maxlength="800"
+        placeholder="One bullet per line"
+        class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 resize-none transition-all">${job.bullets || ''}</textarea>
+    `;
+    container.appendChild(block);
+    if (jobCount >= MAX_JOBS) document.getElementById('add-job-btn').style.display = 'none';
+  });
+});
+{% endif %}
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  btn.textContent = 'Generating your rewrite…';
+  btn.innerHTML = '<span class="material-symbols-outlined animate-spin" style="animation:spin 1s linear infinite">progress_activity</span> Generating your rewrites…';
 });
 </script>
-
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
 {% endblock %}

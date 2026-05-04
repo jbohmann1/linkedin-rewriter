@@ -1,141 +1,261 @@
 {% extends "base.html" %}
-{% block title %}Your two LinkedIn rewrites{% endblock %}
-{% block container_class %}max-w-5xl{% endblock %}
+{% block title %}Your Polished Profile — ProfileRewrite{% endblock %}
+{% block container_class %}{% endblock %}
 
 {% block content %}
+<div class="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
 
-<div class="text-center mb-8">
-  <div class="text-3xl mb-2">🎉</div>
-  <h1 class="text-2xl font-bold text-gray-900 mb-1">Two versions, ready to compare</h1>
-  <p class="text-gray-500 text-sm">Pick the parts you like from each — or mix and match. Copy any section directly into LinkedIn.</p>
-</div>
-
-<!-- ── HEADLINE ─────────────────────────────────────────────────────────── -->
-<div class="card p-5 mb-4">
-  <p class="text-sm font-semibold text-gray-700 mb-3">Headline</p>
-  <div class="bg-gray-50 rounded-lg p-3 mb-3">
-    <p class="text-xs text-gray-400 mb-1">Before</p>
-    <p class="text-sm text-gray-500 italic">{{ data.orig_headline }}</p>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-    <div class="bg-blue-50 rounded-lg p-3">
-      <div class="flex items-center justify-between mb-1">
-        <p class="text-xs text-blue-500 font-medium">Version A</p>
-        <button onclick="copyText('headline-a', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
-      </div>
-      <p id="headline-a" class="text-sm text-gray-800 font-medium">{{ data.version_a.headline }}</p>
+  <!-- Page header -->
+  <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <div>
+      <h1 class="text-h1 font-bold text-primary mb-2">Review Your New Identity</h1>
+      <p class="text-body-lg text-on-surface-variant">Two versions generated. Compare, mix and match, then paste directly into LinkedIn.</p>
     </div>
-    <div class="bg-violet-50 rounded-lg p-3">
-      <div class="flex items-center justify-between mb-1">
-        <p class="text-xs text-violet-500 font-medium">Version B</p>
-        <button onclick="copyText('headline-b', this)" class="text-xs text-violet-600 hover:text-violet-800 font-medium">Copy</button>
+    <a href="/optimize" class="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-primary text-primary text-btn font-medium hover:bg-primary/5 transition-colors">
+      <span class="material-symbols-outlined" style="font-size:18px">edit</span>
+      Refine Inputs
+    </a>
+  </div>
+
+  <!-- Main layout: content + sidebar -->
+  <div class="flex flex-col xl:flex-row gap-6">
+
+    <!-- ── Left: comparison sections ─────────────────────────────────── -->
+    <div class="flex-1 min-w-0 space-y-5">
+
+      <!-- Version legend -->
+      <div class="flex items-center gap-4 px-1">
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+          <span class="text-label-caps text-outline uppercase">Version A</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-violet-500"></div>
+          <span class="text-label-caps text-outline uppercase">Version B</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-3 h-3 rounded-full bg-surface-container-highest border border-outline-variant"></div>
+          <span class="text-label-caps text-outline uppercase">Original</span>
+        </div>
       </div>
-      <p id="headline-b" class="text-sm text-gray-800 font-medium">{{ data.version_b.headline }}</p>
+
+      <!-- Headline -->
+      <div class="bg-white border border-outline-variant rounded-2xl shadow-card overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:20px">title</span>
+            <h2 class="text-h3 font-semibold">Headline</h2>
+          </div>
+          <span class="bg-secondary-fixed text-on-secondary-container text-label-caps px-3 py-1 rounded-full uppercase">High Impact</span>
+        </div>
+        <div class="p-5 space-y-4">
+          <!-- Original -->
+          <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant">
+            <p class="text-label-caps text-outline uppercase mb-2">Original</p>
+            <p class="text-body-md text-on-surface-variant italic">{{ data.orig_headline }}</p>
+          </div>
+          <!-- Two versions -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-label-caps text-blue-600 uppercase">Version A</p>
+                <button onclick="copyText('headline-a',this)" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy
+                </button>
+              </div>
+              <p id="headline-a" class="text-body-md font-medium text-slate-800">{{ data.version_a.headline }}</p>
+            </div>
+            <div class="p-4 bg-violet-50 rounded-xl border border-violet-100">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-label-caps text-violet-600 uppercase">Version B</p>
+                <button onclick="copyText('headline-b',this)" class="text-[11px] text-violet-600 hover:text-violet-800 font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy
+                </button>
+              </div>
+              <p id="headline-b" class="text-body-md font-medium text-slate-800">{{ data.version_b.headline }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="bg-white border border-outline-variant rounded-2xl shadow-card overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:20px">person</span>
+            <h2 class="text-h3 font-semibold">About</h2>
+          </div>
+          <span class="bg-primary-fixed text-on-primary-fixed-variant text-label-caps px-3 py-1 rounded-full uppercase">SEO Optimised</span>
+        </div>
+        <div class="p-5 space-y-4">
+          <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant">
+            <p class="text-label-caps text-outline uppercase mb-2">Original</p>
+            <p class="text-body-sm text-on-surface-variant italic whitespace-pre-line">{{ data.orig_about }}</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-label-caps text-blue-600 uppercase">Version A</p>
+                <button onclick="copyText('about-a',this)" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy
+                </button>
+              </div>
+              <p id="about-a" class="text-body-sm text-slate-800 whitespace-pre-line">{{ data.version_a.about }}</p>
+            </div>
+            <div class="p-4 bg-violet-50 rounded-xl border border-violet-100">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-label-caps text-violet-600 uppercase">Version B</p>
+                <button onclick="copyText('about-b',this)" class="text-[11px] text-violet-600 hover:text-violet-800 font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy
+                </button>
+              </div>
+              <p id="about-b" class="text-body-sm text-slate-800 whitespace-pre-line">{{ data.version_b.about }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobs -->
+      {% set jobs_a = data.version_a.jobs %}
+      {% set jobs_b = data.version_b.jobs %}
+      {% for orig in data.orig_jobs %}
+      {% set idx = loop.index0 %}
+      <div class="bg-white border border-outline-variant rounded-2xl shadow-card overflow-hidden">
+        <div class="flex items-center gap-2 px-6 py-4 border-b border-outline-variant">
+          <span class="material-symbols-outlined text-primary" style="font-size:20px">work</span>
+          <h2 class="text-h3 font-semibold">{{ orig.title }}</h2>
+        </div>
+        <div class="p-5 space-y-4">
+          <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant">
+            <p class="text-label-caps text-outline uppercase mb-2">Original</p>
+            {% for line in orig.bullets.split('\n') %}
+              {% if line.strip() %}
+              <p class="text-body-sm text-on-surface-variant italic mb-1">{{ line.strip() }}</p>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-label-caps text-blue-600 uppercase">Version A</p>
+                <button onclick="copyText('job-a-{{ idx }}',this)" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy
+                </button>
+              </div>
+              <div id="job-a-{{ idx }}">
+                {% if jobs_a and idx < jobs_a|length %}
+                  {% for bullet in jobs_a[idx].bullets %}
+                  <p class="text-body-sm text-slate-800 mb-1.5">{{ bullet }}</p>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+            <div class="p-4 bg-violet-50 rounded-xl border border-violet-100">
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-label-caps text-violet-600 uppercase">Version B</p>
+                <button onclick="copyText('job-b-{{ idx }}',this)" class="text-[11px] text-violet-600 hover:text-violet-800 font-medium flex items-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy
+                </button>
+              </div>
+              <div id="job-b-{{ idx }}">
+                {% if jobs_b and idx < jobs_b|length %}
+                  {% for bullet in jobs_b[idx].bullets %}
+                  <p class="text-body-sm text-slate-800 mb-1.5">{{ bullet }}</p>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+
+    <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+    <div class="xl:w-72 shrink-0 space-y-5">
+
+      <!-- Pro tip -->
+      <div class="bg-white border border-outline-variant rounded-2xl shadow-card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-secondary" style="font-size:20px">lightbulb</span>
+          <h3 class="text-h3 text-[16px] font-semibold">Recruiter Pro Tip</h3>
+        </div>
+        <p class="text-body-sm text-on-surface-variant mb-4">Recruiters scan headlines in under 2 seconds. Using vertical bars (|) makes skills easier to digest than long sentences.</p>
+        <div class="space-y-2">
+          <div class="flex justify-between items-center text-label-caps text-outline uppercase">
+            <span>Profile Strength</span><span class="text-secondary font-bold">High</span>
+          </div>
+          <div class="h-2 bg-surface-container-highest rounded-full overflow-hidden">
+            <div class="h-full w-4/5 bg-secondary rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action verb tip -->
+      <div class="bg-white border border-outline-variant rounded-2xl shadow-card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-primary" style="font-size:20px">bolt</span>
+          <h3 class="text-h3 text-[16px] font-semibold">Action Verb Power</h3>
+        </div>
+        <p class="text-body-sm text-on-surface-variant">Notice how "Responsible for" became "Engineered" or "Spearheaded". Strong verbs signal leadership and ownership to recruiters.</p>
+      </div>
+
+      <!-- Mix and match tip -->
+      <div class="bg-primary-fixed rounded-2xl p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-primary-container" style="font-size:20px">shuffle</span>
+          <h3 class="text-h3 text-[16px] font-semibold text-primary-container">Mix &amp; Match</h3>
+        </div>
+        <p class="text-body-sm text-on-primary-fixed">You can take Version A's headline and Version B's bullets — or any combination. There's no rule to use one version end-to-end.</p>
+      </div>
+
+      <!-- Next steps -->
+      <div class="bg-white border border-outline-variant rounded-2xl shadow-card p-5">
+        <h3 class="text-h3 text-[16px] font-semibold mb-4">Before You Paste</h3>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-2 text-body-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-secondary mt-0.5" style="font-size:16px">check_circle</span>
+            Add real numbers wherever you have them — they always beat "significantly".
+          </li>
+          <li class="flex items-start gap-2 text-body-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-secondary mt-0.5" style="font-size:16px">check_circle</span>
+            Update your LinkedIn URL slug (yourname not yourname123abc).
+          </li>
+          <li class="flex items-start gap-2 text-body-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-secondary mt-0.5" style="font-size:16px">check_circle</span>
+            Add a profile photo if you don't have one — 21× more profile views.
+          </li>
+          <li class="flex items-start gap-2 text-body-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-secondary mt-0.5" style="font-size:16px">check_circle</span>
+            Read it out loud — does it sound like you?
+          </li>
+        </ul>
+      </div>
+
+      <!-- Rewrite again CTA -->
+      <div class="text-center space-y-2">
+        <a href="/optimize" class="block w-full bg-secondary text-on-secondary py-3.5 rounded-xl text-btn font-medium hover:opacity-90 transition-opacity">
+          Rewrite Again — CHF 5
+        </a>
+        <p class="text-[11px] text-outline">This page expires in 1 hour for privacy reasons.</p>
+      </div>
+
     </div>
   </div>
 </div>
+{% endblock %}
 
-<!-- ── ABOUT ─────────────────────────────────────────────────────────────── -->
-<div class="card p-5 mb-4">
-  <p class="text-sm font-semibold text-gray-700 mb-3">About section</p>
-  <div class="bg-gray-50 rounded-lg p-3 mb-3">
-    <p class="text-xs text-gray-400 mb-1">Before</p>
-    <p class="text-sm text-gray-500 italic whitespace-pre-line">{{ data.orig_about }}</p>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-    <div class="bg-blue-50 rounded-lg p-3">
-      <div class="flex items-center justify-between mb-1">
-        <p class="text-xs text-blue-500 font-medium">Version A</p>
-        <button onclick="copyText('about-a', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
-      </div>
-      <p id="about-a" class="text-sm text-gray-800 whitespace-pre-line">{{ data.version_a.about }}</p>
-    </div>
-    <div class="bg-violet-50 rounded-lg p-3">
-      <div class="flex items-center justify-between mb-1">
-        <p class="text-xs text-violet-500 font-medium">Version B</p>
-        <button onclick="copyText('about-b', this)" class="text-xs text-violet-600 hover:text-violet-800 font-medium">Copy</button>
-      </div>
-      <p id="about-b" class="text-sm text-gray-800 whitespace-pre-line">{{ data.version_b.about }}</p>
-    </div>
-  </div>
-</div>
-
-<!-- ── JOBS ──────────────────────────────────────────────────────────────── -->
-{% set jobs_a = data.version_a.jobs %}
-{% set jobs_b = data.version_b.jobs %}
-
-{% for orig in data.orig_jobs %}
-{% set idx = loop.index0 %}
-<div class="card p-5 mb-4">
-  <p class="text-sm font-semibold text-gray-700 mb-3">{{ orig.title }}</p>
-  <div class="bg-gray-50 rounded-lg p-3 mb-3">
-    <p class="text-xs text-gray-400 mb-2">Before</p>
-    {% for line in orig.bullets.split('\n') %}
-      {% if line.strip() %}
-      <p class="text-sm text-gray-500 italic mb-1">{{ line.strip() }}</p>
-      {% endif %}
-    {% endfor %}
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-    <div class="bg-blue-50 rounded-lg p-3">
-      <div class="flex items-center justify-between mb-2">
-        <p class="text-xs text-blue-500 font-medium">Version A</p>
-        <button onclick="copyText('job-a-{{ idx }}', this)" class="text-xs text-blue-600 hover:text-blue-800 font-medium">Copy</button>
-      </div>
-      <div id="job-a-{{ idx }}">
-        {% if jobs_a and idx < jobs_a|length %}
-          {% for bullet in jobs_a[idx].bullets %}
-          <p class="text-sm text-gray-800 mb-1">{{ bullet }}</p>
-          {% endfor %}
-        {% endif %}
-      </div>
-    </div>
-    <div class="bg-violet-50 rounded-lg p-3">
-      <div class="flex items-center justify-between mb-2">
-        <p class="text-xs text-violet-500 font-medium">Version B</p>
-        <button onclick="copyText('job-b-{{ idx }}', this)" class="text-xs text-violet-600 hover:text-violet-800 font-medium">Copy</button>
-      </div>
-      <div id="job-b-{{ idx }}">
-        {% if jobs_b and idx < jobs_b|length %}
-          {% for bullet in jobs_b[idx].bullets %}
-          <p class="text-sm text-gray-800 mb-1">{{ bullet }}</p>
-          {% endfor %}
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
-{% endfor %}
-
-<!-- ── TIPS ──────────────────────────────────────────────────────────────── -->
-<div class="card p-5 mb-6 bg-amber-50 border-amber-100">
-  <p class="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2">Pro tips before you paste</p>
-  <ul class="text-sm text-amber-800 space-y-1 list-disc list-inside">
-    <li>Mix and match — you can take Version A's headline and Version B's bullets.</li>
-    <li>Add real numbers wherever you have them — they always beat "significantly".</li>
-    <li>Update your LinkedIn URL slug while you're in there (yourname instead of yourname123abc).</li>
-    <li>Add a profile photo if you don't have one — profiles with photos get 21× more views.</li>
-  </ul>
-</div>
-
-<!-- ── FOOTER CTA ─────────────────────────────────────────────────────────── -->
-<div class="text-center space-y-3">
-  <p class="text-sm text-gray-500">Want to try a different tone or target role?</p>
-  <a href="/" class="btn-primary">Rewrite again — $7</a>
-  <p class="text-xs text-gray-400 mt-2">This page expires in 1 hour for privacy reasons.</p>
-</div>
-
+{% block extra_scripts %}
 <script>
-function copyText(elementId, btn) {
-  const el = document.getElementById(elementId);
-  const text = el.innerText;
-  navigator.clipboard.writeText(text).then(() => {
-    const original = btn.textContent;
-    btn.textContent = 'Copied!';
-    btn.style.color = '#16a34a';
-    setTimeout(() => { btn.textContent = original; btn.style.color = ''; }, 2000);
+function copyText(id, btn) {
+  var text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">check</span> Copied!';
+    btn.style.color = '#006c4a';
+    setTimeout(function(){ btn.innerHTML = orig; btn.style.color = ''; }, 2000);
   });
 }
 </script>
-
 {% endblock %}

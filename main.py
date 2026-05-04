@@ -168,6 +168,11 @@ async def run_two_rewrites(prompt: str) -> tuple[dict, dict]:
 
 @app.get("/", response_class=HTMLResponse)
 async def landing(request: Request):
+    return templates.TemplateResponse("landing.html", {"request": request})
+
+
+@app.get("/optimize", response_class=HTMLResponse)
+async def optimize(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -184,9 +189,8 @@ async def generate(
     if is_rate_limited(ip):
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "error": (
-                "Too many requests — please wait an hour before trying again."
-            )},
+            {"request": request, "error": "Too many requests — please wait an hour before trying again.",
+             "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": []}},
             status_code=429,
         )
 
@@ -210,7 +214,8 @@ async def generate(
     if len(headline) < 10 or len(about) < 30:
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "error": "Please fill in all fields with enough detail."},
+            {"request": request, "error": "Please fill in all fields with enough detail.",
+             "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
             status_code=422,
         )
 
@@ -226,12 +231,13 @@ async def generate(
                 {"request": request, "error": (
                     "Your profile is too long to process in one go. "
                     "Try shortening your About section or reducing bullets to 2–3 per job."
-                )},
+                ), "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
                 status_code=422,
             )
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "error": "Generation failed — please try again."},
+            {"request": request, "error": "Generation failed — please try again.",
+             "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
             status_code=500,
         )
     except json.JSONDecodeError:
@@ -240,13 +246,14 @@ async def generate(
             {"request": request, "error": (
                 "Something went wrong formatting your rewrite. "
                 "Please try again — if it keeps failing, try shortening your inputs."
-            )},
+            ), "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
             status_code=500,
         )
     except Exception as e:
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "error": f"Generation failed — please try again. ({e})"},
+            {"request": request, "error": f"Generation failed — please try again. ({e})",
+             "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
             status_code=500,
         )
 
@@ -274,7 +281,8 @@ async def generate(
     except stripe.error.StripeError as e:
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "error": f"Payment setup failed: {e.user_message}"},
+            {"request": request, "error": f"Payment setup failed: {e.user_message}",
+             "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
             status_code=500,
         )
 

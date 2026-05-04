@@ -1,22 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Confirming your payment…{% endblock %}
-
+{% block title %}Confirming payment — ProfileRewrite{% endblock %}
+{% block container_class %}{% endblock %}
 {% block content %}
-<div class="text-center py-16">
-  <div class="inline-block w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-6"></div>
-  <h2 class="text-xl font-semibold text-gray-800 mb-2">Confirming your payment…</h2>
-  <p class="text-gray-500 text-sm">This usually takes 2–3 seconds. Hang tight.</p>
+<div class="max-w-md mx-auto px-6 py-32 text-center">
+  <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-fixed mb-8">
+    <span class="material-symbols-outlined text-primary-container animate-spin" style="font-size:32px;animation:spin 1s linear infinite">progress_activity</span>
+  </div>
+  <h2 class="text-h2 font-semibold text-primary mb-3">Confirming your payment…</h2>
+  <p class="text-body-lg text-on-surface-variant">This usually takes 2–3 seconds. Hang tight.</p>
 </div>
-
+<style>@keyframes spin{to{transform:rotate(360deg);}}</style>
 <script>
-(async function poll() {
-  const res  = await fetch('/poll-status?session_id={{ session_id }}');
+(async function poll(){
+  const res = await fetch('/poll-status?session_id={{ session_id }}');
   const data = await res.json();
-  if (data.paid) {
-    window.location.href = '/result?session_id={{ session_id }}';
-  } else {
-    setTimeout(poll, 1500);
-  }
+  if(data.paid){ window.location.href='/result?session_id={{ session_id }}'; }
+  else { setTimeout(poll,1500); }
 })();
 </script>
 {% endblock %}
