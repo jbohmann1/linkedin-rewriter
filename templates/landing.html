@@ -92,8 +92,16 @@
         <p class="text-on-surface-variant mb-6">Replace generic titles with high-impact, keyword-optimized headlines that rank you higher in recruiter search results.</p>
 
         <!-- Carousel example box -->
-        <div class="bg-surface rounded-lg border border-outline-variant/40 p-4">
-          <p id="headline-example" class="italic text-body-sm text-primary min-h-[48px]"></p>
+        <div class="rounded-lg border border-outline-variant/40 p-4 bg-surface">
+          <div class="flex items-stretch gap-3">
+            <div class="w-2/5 bg-white border border-outline-variant rounded-lg px-3 py-2.5 min-h-[72px] flex items-center">
+              <p id="headline-before" class="italic text-body-sm text-on-surface-variant leading-snug"></p>
+            </div>
+            <span class="text-on-surface-variant font-medium shrink-0 self-center">→</span>
+            <div class="w-3/5 bg-primary-fixed/40 border border-primary/20 rounded-lg px-3 py-2.5 min-h-[72px] flex items-center">
+              <p id="headline-after" class="italic text-body-sm text-primary leading-snug"></p>
+            </div>
+          </div>
           <p id="headline-industry" class="text-label-caps text-outline uppercase tracking-widest mt-3"></p>
         </div>
       </div>
@@ -145,6 +153,7 @@
         <div class="w-16 h-16 bg-primary-fixed text-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">1</div>
         <h3 class="text-h3 font-semibold mb-2">Paste your info</h3>
         <p class="text-on-surface-variant">Fill in your current headline, about section, and job bullets. Add up to 3 roles.</p>
+        <p class="text-on-surface-variant text-body-sm mt-1 italic">The more detail you provide, the sharper your rewrite.</p>
         <div class="hidden md:block absolute top-8 left-[60%] w-[80%] h-[2px] bg-outline-variant -z-10"></div>
       </div>
       <div class="relative text-center">
@@ -202,7 +211,8 @@ let idx = 0;
 function next() {
   idx = (idx + 1) % EXAMPLES.length;
   const ex = EXAMPLES[idx];
-  crossfade(document.getElementById('headline-example'), '“' + ex.before + '” → “' + ex.after + '”');
+  crossfade(document.getElementById('headline-before'), ex.before);
+  crossfade(document.getElementById('headline-after'), ex.after);
   crossfade(document.getElementById('headline-industry'), ex.industry);
   crossfade(document.getElementById('version-a-text'), '“' + ex.va + '”');
   crossfade(document.getElementById('version-b-text'), '“' + ex.vb + '”');
@@ -210,12 +220,14 @@ function next() {
 
 document.addEventListener('DOMContentLoaded', function() {
   const ex0 = EXAMPLES[0];
-  const h = document.getElementById('headline-example');
+  const hb = document.getElementById('headline-before');
+  const ha = document.getElementById('headline-after');
   const ind = document.getElementById('headline-industry');
   const va = document.getElementById('version-a-text');
   const vb = document.getElementById('version-b-text');
-  [h, ind, va, vb].forEach(el => { if (el) el.style.transition = 'opacity ' + FADE + 'ms ease'; });
-  if (h)   h.textContent   = '“' + ex0.before + '” → “' + ex0.after + '”';
+  [hb, ha, ind, va, vb].forEach(el => { if (el) el.style.transition = 'opacity ' + FADE + 'ms ease'; });
+  if (hb)  hb.textContent  = ex0.before;
+  if (ha)  ha.textContent  = ex0.after;
   if (ind) ind.textContent = ex0.industry;
   if (va)  va.textContent  = '“' + ex0.va + '”';
   if (vb)  vb.textContent  = '“' + ex0.vb + '”';

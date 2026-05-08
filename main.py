@@ -110,6 +110,8 @@ Guidelines:
 - If a phrase could appear on anyone's profile, rewrite it until it could only appear on this person's
 - Weak verbs, hollow adjectives, and corporate filler should quietly disappear in the rewrite
 - Lead every bullet with a verb that carries weight — the kind that makes a reader lean forward
+- Each bullet must be exactly one sentence — no semicolons, no multiple clauses, no paragraph-style writing. One action, one outcome, full stop.
+- Only rewrite bullets the user has actually provided — if a job has no bullets, return an empty bullets array for that job. Never invent bullets from nothing.
 - The target role informs the framing and keyword choices — it should shape the profile's angle, not appear as a named destination in the text itself
 
 Return ONLY valid JSON with this exact structure — no markdown, no code fences, no backticks, no explanation, no text before or after the JSON:

@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script id="tailwind-config">
     tailwind.config = {
-      darkMode: "class",
       theme: {
         extend: {
           colors: {
@@ -64,45 +63,17 @@
       font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;
       display:inline-block; vertical-align:middle; line-height:1;
     }
-    /* Dark mode */
-    html.dark body { background:#0f172a; color:#f1f5f9; }
-    html.dark .bg-white,
-    html.dark .bg-surface-container-lowest,
-    html.dark .bg-surface,
-    html.dark .bg-background { background:#1e293b !important; }
-    html.dark .bg-surface-container-low,
-    html.dark .bg-surface-container { background:#243044 !important; }
-    html.dark .bg-surface-container-high,
-    html.dark .bg-surface-container-highest { background:#2d3a4f !important; }
-    html.dark .bg-primary-fixed   { background:#1e3a5f !important; }
-    html.dark .bg-secondary-container { background:#003d2a !important; }
-    html.dark .bg-secondary-fixed { background:#004d35 !important; }
-    html.dark .text-on-surface    { color:#f1f5f9 !important; }
-    html.dark .text-on-surface-variant { color:#94a3b8 !important; }
-    html.dark .text-primary       { color:#84aff7 !important; }
-    html.dark .text-on-primary-fixed-variant { color:#84aff7 !important; }
-    html.dark .text-on-secondary-container   { color:#68dba9 !important; }
-    html.dark .text-outline       { color:#64748b !important; }
-    html.dark .border-outline-variant { border-color:#334155 !important; }
-    html.dark .divide-outline-variant > * + * { border-color:#334155 !important; }
-    html.dark input, html.dark textarea, html.dark select {
-      background:#0f172a !important; color:#f1f5f9 !important; border-color:#334155 !important;
-    }
-    html.dark input::placeholder, html.dark textarea::placeholder { color:#475569 !important; }
-    /* Focus ring */
     input:focus, textarea:focus, select:focus {
       outline:none; border-color:#004182 !important;
       box-shadow:0 0 0 3px rgba(0,65,130,0.15);
     }
-    /* iOS zoom prevention */
     input, textarea, select { font-size:16px !important; }
   </style>
-  <script>(function(){var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark');}})();</script>
 </head>
 <body class="font-sans text-on-surface bg-background min-h-screen antialiased">
 
   <!-- Nav -->
-  <header class="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm">
     <nav class="flex items-center justify-between px-4 sm:px-8 h-16 max-w-screen-xl mx-auto">
       <a href="/" class="text-xl font-bold text-primary-container tracking-tighter">ProfileRewrite</a>
       <div class="hidden md:flex items-center gap-8 text-sm font-medium">
@@ -111,11 +82,6 @@
         <a href="/optimize" class="text-slate-600 hover:text-primary-container transition-colors">Optimize</a>
       </div>
       <div class="flex items-center gap-2 sm:gap-3">
-        <button id="dark-toggle" onclick="toggleDark()"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-outline-variant text-outline hover:border-primary-container hover:text-primary-container transition-all text-label-caps">
-          <span id="dark-icon" class="material-symbols-outlined" style="font-size:16px">dark_mode</span>
-          <span id="dark-label" class="hidden sm:inline">Dark</span>
-        </button>
         <a href="/optimize" class="bg-secondary text-on-secondary px-4 sm:px-6 py-2.5 rounded-lg text-btn font-medium hover:opacity-90 active:opacity-80 transition-opacity">
           Optimize Profile
         </a>
@@ -141,11 +107,6 @@
     </div>
   </footer>
 
-  <script>
-    function toggleDark(){var d=document.documentElement.classList.toggle('dark');localStorage.setItem('theme',d?'dark':'light');updateToggle(d);}
-    function updateToggle(d){document.getElementById('dark-icon').textContent=d?'light_mode':'dark_mode';document.getElementById('dark-label').textContent=d?'Light':'Dark';}
-    updateToggle(document.documentElement.classList.contains('dark'));
-  </script>
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>
