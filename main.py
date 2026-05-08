@@ -5,6 +5,7 @@ import json
 import asyncio
 import stripe
 import anthropic
+import traceback
 
 from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -30,15 +31,13 @@ STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
 STRIPE_PRICE_ID       = os.getenv("STRIPE_PRICE_ID")
 BASE_URL              = os.getenv("BASE_URL", "http://localhost:8000")
 
-TTL = 3600  # 1 hour — rewrites expire after this
+TTL = 3600
 
 # ── Rate limiting ─────────────────────────────────────────────────────────────
-# Max attempts per IP per window before Claude is called
-RATE_LIMIT      = 5      # attempts allowed
-RATE_WINDOW     = 3600   # per hour (seconds)
+RATE_LIMIT  = 10
+RATE_WINDOW = 3600
 
 def get_client_ip(request: Request) -> str:
-    # Respect proxy headers (Railway sets X-Forwarded-For)
     forwarded = request.headers.get("x-forwarded-for")
     if forwarded:
         return forwarded.split(",")[0].strip()
@@ -57,12 +56,11 @@ def is_rate_limited(ip: str) -> bool:
 
 # ── Input limits ──────────────────────────────────────────────────────────────
 MAX_HEADLINE    = 300
-MAX_ABOUT       = 2000   # ~400 words — enough for any real About section
-MAX_BULLETS     = 800    # per job
+MAX_ABOUT       = 2000
+MAX_BULLETS     = 800
 MAX_TARGET_ROLE = 100
 
 # ── Sanitization ─────────────────────────────────────────────────────────────
-# Strip prompt-injection attempts: lines that look like instructions to the model
 INJECTION_PATTERNS = [
     r"ignore\s+(all\s+)?(previous|above|prior)\s+instructions?",
     r"disregard\s+(all\s+)?(previous|above|prior)",
@@ -75,10 +73,8 @@ INJECTION_PATTERNS = [
 _INJECTION_RE = re.compile("|".join(INJECTION_PATTERNS), re.IGNORECASE)
 
 def sanitize(text: str, max_len: int) -> str:
-    """Truncate to max_len and strip obvious injection attempts."""
     text = text[:max_len]
     if _INJECTION_RE.search(text):
-        # Remove the offending line rather than rejecting outright
         lines = [l for l in text.splitlines() if not _INJECTION_RE.search(l)]
         text = "\n".join(lines)
     return text.strip()
@@ -87,11 +83,10 @@ def sanitize(text: str, max_len: int) -> str:
 
 def build_prompt(headline: str, about: str, jobs: list[dict], target_role: str, tone: str) -> str:
     tone_guide = {
-        "professional": "Clear, confident, formal — suitable for corporate / finance / law roles.",
+        "professional":   "Clear, confident, formal — suitable for corporate / finance / law roles.",
         "conversational": "Warm, first-person, human — suitable for startups, creative industries, consulting.",
         "bold":           "Direct, high-impact, strong verbs — suitable for leadership, sales, entrepreneurship.",
     }
-
     jobs_text = ""
     for i, job in enumerate(jobs, 1):
         jobs_text += f"\nJob {i}: {job['title']}\nBullets:\n{job['bullets']}\n"
@@ -136,7 +131,6 @@ Experience:
 # ── Claude helpers ────────────────────────────────────────────────────────────
 
 async def call_claude(prompt: str) -> dict:
-    """Run one Claude call in a thread (SDK is sync) and return parsed JSON."""
     loop = asyncio.get_event_loop()
     message = await loop.run_in_executor(
         None,
@@ -157,7 +151,6 @@ async def call_claude(prompt: str) -> dict:
 
 
 async def run_two_rewrites(prompt: str) -> tuple[dict, dict]:
-    """Run two Claude calls concurrently and return both results."""
     result_a, result_b = await asyncio.gather(
         call_claude(prompt),
         call_claude(prompt),
@@ -176,6 +169,11 @@ async def optimize(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/generate")
+async def generate_redirect():
+    return RedirectResponse("/optimize", status_code=303)
+
+
 @app.post("/generate")
 async def generate(
     request: Request,
@@ -184,7 +182,7 @@ async def generate(
     target_role: str = Form(...),
     tone: str        = Form("professional"),
 ):
-    # ── Rate limit check — before anything else ───────────────────────────────
+    # ── Rate limit ────────────────────────────────────────────────────────────
     ip = get_client_ip(request)
     if is_rate_limited(ip):
         return templates.TemplateResponse(
@@ -194,14 +192,12 @@ async def generate(
             status_code=429,
         )
 
-    # ── Sanitize and enforce character limits ─────────────────────────────────
+    # ── Sanitize ──────────────────────────────────────────────────────────────
     headline    = sanitize(headline,    MAX_HEADLINE)
     about       = sanitize(about,       MAX_ABOUT)
     target_role = sanitize(target_role, MAX_TARGET_ROLE)
-    # Tone must be one of the allowed values — ignore anything else
     tone        = tone if tone in ("professional", "conversational", "bold") else "professional"
 
-    # Collect and sanitize job fields
     form_data = await request.form()
     jobs = []
     for i in range(1, 4):
@@ -210,7 +206,7 @@ async def generate(
         if title or bullets:
             jobs.append({"title": title or f"Job {i}", "bullets": bullets})
 
-    # ── Basic validation ──────────────────────────────────────────────────────
+    # ── Validate ──────────────────────────────────────────────────────────────
     if len(headline) < 10 or len(about) < 30:
         return templates.TemplateResponse(
             "index.html",
@@ -228,10 +224,8 @@ async def generate(
         if "max_tokens" in str(e):
             return templates.TemplateResponse(
                 "index.html",
-                {"request": request, "error": (
-                    "Your profile is too long to process in one go. "
-                    "Try shortening your About section or reducing bullets to 2–3 per job."
-                ), "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
+                {"request": request, "error": "Your profile is too long to process in one go. Try shortening your About section or reducing bullets to 2–3 per job.",
+                 "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
                 status_code=422,
             )
         return templates.TemplateResponse(
@@ -243,13 +237,12 @@ async def generate(
     except json.JSONDecodeError:
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "error": (
-                "Something went wrong formatting your rewrite. "
-                "Please try again — if it keeps failing, try shortening your inputs."
-            ), "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
+            {"request": request, "error": "Something went wrong formatting your rewrite. Please try again — if it keeps failing, try shortening your inputs.",
+             "prefill": {"headline": headline, "about": about, "target_role": target_role, "tone": tone, "jobs": jobs}},
             status_code=500,
         )
     except Exception as e:
+        traceback.print_exc()
         return templates.TemplateResponse(
             "index.html",
             {"request": request, "error": f"Generation failed — please try again. ({e})",
@@ -257,7 +250,7 @@ async def generate(
             status_code=500,
         )
 
-    # Store both rewrites in Redis
+    # ── Store in Redis ────────────────────────────────────────────────────────
     key = f"rewrite:{uuid.uuid4().hex}"
     redis.setex(key, TTL, json.dumps({
         "version_a":     rewrite_a,
@@ -268,7 +261,7 @@ async def generate(
         "orig_jobs":     jobs,
     }))
 
-    # Create Stripe Checkout Session
+    # ── Create Stripe Checkout Session ────────────────────────────────────────
     try:
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
@@ -291,14 +284,12 @@ async def generate(
 
 @app.get("/result", response_class=HTMLResponse)
 async def result(request: Request, session_id: str):
-    # Verify payment with Stripe (source of truth)
     try:
         session = stripe.checkout.Session.retrieve(session_id)
     except stripe.error.StripeError:
         raise HTTPException(status_code=404, detail="Session not found.")
 
     if session.payment_status != "paid":
-        # Payment not confirmed yet — let the template poll
         return templates.TemplateResponse(
             "waiting.html",
             {"request": request, "session_id": session_id},
@@ -316,7 +307,6 @@ async def result(request: Request, session_id: str):
 
 @app.get("/poll-status")
 async def poll_status(session_id: str):
-    """HTMX/JS polls this while waiting for Stripe webhook."""
     try:
         session = stripe.checkout.Session.retrieve(session_id)
         if session.payment_status == "paid":
