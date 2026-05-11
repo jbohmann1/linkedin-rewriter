@@ -6,15 +6,9 @@
 <div class="max-w-screen-xl mx-auto px-4 sm:px-6 py-12">
 
   <!-- Page header -->
-  <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-    <div>
-      <h1 class="text-h1 font-bold text-primary mb-2">Review Your New Identity</h1>
-      <p class="text-body-lg text-on-surface-variant">Two versions generated. Compare, mix and match, then paste directly into LinkedIn.</p>
-    </div>
-    <a href="/optimize" class="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-primary text-primary text-btn font-medium hover:bg-primary/5 transition-colors">
-      <span class="material-symbols-outlined" style="font-size:18px">edit</span>
-      Refine Inputs
-    </a>
+  <div class="mb-8">
+    <h1 class="text-h1 font-bold text-primary mb-2">Review Your New Identity</h1>
+    <p class="text-body-lg text-on-surface-variant">Two versions generated. Compare, mix and match, then paste directly into LinkedIn.</p>
   </div>
 
   <!-- Main layout: content + sidebar -->
@@ -120,6 +114,7 @@
       {% set jobs_b = data.version_b.jobs %}
       {% for orig in data.orig_jobs %}
       {% set idx = loop.index0 %}
+      {% if jobs_a and idx < jobs_a|length and jobs_a[idx].bullets %}
       <div class="bg-white border border-outline-variant rounded-2xl shadow-card overflow-hidden">
         <div class="flex items-center gap-2 px-6 py-4 border-b border-outline-variant">
           <span class="material-symbols-outlined text-primary" style="font-size:20px">work</span>
@@ -168,6 +163,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
       {% endfor %}
 
     </div>

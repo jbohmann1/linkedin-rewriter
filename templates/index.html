@@ -25,8 +25,8 @@
   </div>
 
   {% if error %}
-  <div class="mb-6 flex items-start gap-3 bg-error-container border border-error/20 text-on-error-container rounded-xl p-4">
-    <span class="material-symbols-outlined text-error mt-0.5">error</span>
+  <div class="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">
+    <span class="material-symbols-outlined text-red-500 mt-0.5">error</span>
     <p class="text-body-sm">{{ error }}</p>
   </div>
   {% endif %}
@@ -34,9 +34,51 @@
   {% if request.query_params.get('cancelled') %}
   <div class="mb-6 flex items-start gap-3 bg-surface-container border border-outline-variant rounded-xl p-4">
     <span class="material-symbols-outlined text-outline mt-0.5">info</span>
-    <p class="text-body-sm text-on-surface-variant">Payment cancelled — your rewrite is ready when you are. Fill in the form again to retry.</p>
+    <p class="text-body-sm text-on-surface-variant">Payment cancelled — fill in the form again to retry.</p>
   </div>
   {% endif %}
+
+  <!-- Paste All banner -->
+  <div class="mb-6 bg-primary-fixed/40 border border-primary/20 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div class="flex items-start gap-3">
+      <span class="material-symbols-outlined text-primary mt-0.5 shrink-0" style="font-size:20px">content_paste</span>
+      <div>
+        <p class="text-body-sm font-medium text-primary mb-1">Paste your full LinkedIn profile</p>
+        <ol class="text-[12px] text-on-surface-variant space-y-0.5 list-none">
+          <li><span class="font-medium text-primary">1.</span> Go to your LinkedIn profile page</li>
+          <li><span class="font-medium text-primary">2.</span> Press <kbd class="bg-white border border-outline-variant px-1.5 py-0.5 rounded text-[11px] font-mono">Ctrl+A</kbd> to select all</li>
+          <li><span class="font-medium text-primary">3.</span> Press <kbd class="bg-white border border-outline-variant px-1.5 py-0.5 rounded text-[11px] font-mono">Ctrl+C</kbd> to copy</li>
+          <li><span class="font-medium text-primary">4.</span> Click <span class="font-medium">Paste &amp; Fill</span> and paste with <kbd class="bg-white border border-outline-variant px-1.5 py-0.5 rounded text-[11px] font-mono">Ctrl+V</kbd></li>
+        </ol>
+      </div>
+    </div>
+    <button type="button" id="paste-all-btn"
+      class="shrink-0 bg-primary text-on-primary px-4 py-2 rounded-lg text-body-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2">
+      <span class="material-symbols-outlined" style="font-size:16px">content_paste</span>
+      Paste &amp; Fill
+    </button>
+  </div>
+
+  <!-- Paste modal -->
+  <div id="paste-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
+      <h3 class="text-h3 text-[18px] font-semibold text-primary mb-2">Paste your LinkedIn profile</h3>
+      <p class="text-body-sm text-on-surface-variant mb-4">Press <kbd class="bg-surface-container px-1.5 py-0.5 rounded text-[11px] font-mono">Ctrl+V</kbd> in the box below to paste your copied profile text.</p>
+      <textarea id="paste-modal-input" rows="8" placeholder="Paste here (Ctrl+V)…"
+        class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 text-body-sm resize-none mb-4 transition-all"></textarea>
+      <div class="flex gap-3 justify-end">
+        <button type="button" onclick="closePasteModal()"
+          class="px-4 py-2 rounded-lg border border-outline-variant text-body-sm text-on-surface-variant hover:bg-surface-container transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="submitPaste()"
+          id="paste-submit-btn"
+          class="px-6 py-2 rounded-lg bg-secondary text-on-secondary text-body-sm font-medium hover:opacity-90 transition-opacity">
+          Fill my profile
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Form card -->
   <section class="bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-card p-6 sm:p-10">
@@ -46,7 +88,12 @@
       <div class="space-y-2">
         <div class="flex justify-between items-end">
           <label for="headline" class="text-label-caps text-primary uppercase tracking-wider">Current Headline</label>
-          <span id="headline-count" class="text-[11px] text-outline font-medium">0 / 220</span>
+          <div class="flex items-center gap-3">
+            <button type="button" onclick="pasteField('headline')" class="text-[11px] text-secondary hover:text-green-700 font-medium flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined" style="font-size:13px">content_paste</span> Paste
+            </button>
+            <span id="headline-count" class="text-[11px] text-outline font-medium">0 / 220</span>
+          </div>
         </div>
         <input
           type="text" id="headline" name="headline" required maxlength="220"
@@ -62,7 +109,12 @@
       <div class="space-y-2">
         <div class="flex justify-between items-end">
           <label for="about" class="text-label-caps text-primary uppercase tracking-wider">About Section</label>
-          <span id="about-count" class="text-[11px] text-outline font-medium">0 / 2000</span>
+          <div class="flex items-center gap-3">
+            <button type="button" onclick="pasteField('about')" class="text-[11px] text-secondary hover:text-green-700 font-medium flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined" style="font-size:13px">content_paste</span> Paste
+            </button>
+            <span id="about-count" class="text-[11px] text-outline font-medium">0 / 2000</span>
+          </div>
         </div>
         <textarea
           id="about" name="about" required rows="6" maxlength="2000"
@@ -76,7 +128,10 @@
       <!-- Dynamic job cards -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label class="text-label-caps text-primary uppercase tracking-wider">Experience &amp; Job Bullets</label>
+          <div>
+            <label class="text-label-caps text-primary uppercase tracking-wider">Experience &amp; Job Bullets</label>
+            <span class="ml-2 text-[11px] text-outline italic">optional</span>
+          </div>
           <div class="flex items-center gap-1.5">
             <span class="material-symbols-outlined text-secondary" style="font-size:16px">info</span>
             <span class="text-[11px] text-outline font-medium">Up to 3 jobs</span>
@@ -88,17 +143,25 @@
           <div class="job-block bg-surface border border-outline-variant rounded-xl p-5" id="job-1">
             <div class="flex items-center justify-between mb-3">
               <span class="text-label-caps text-primary uppercase tracking-wider">Job 1</span>
+              <button type="button" onclick="pasteField('job_title_1')" class="text-[11px] text-secondary hover:text-green-700 font-medium flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined" style="font-size:13px">content_paste</span> Paste title
+              </button>
             </div>
             <input
-              type="text" name="job_title_1"
+              type="text" id="job_title_1" name="job_title_1"
               placeholder="Job title & company — e.g. Financial Controller at Acme AG"
               value="{{ prefill.jobs[0].title if prefill and prefill.jobs else '' }}"
               maxlength="150"
               class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 mb-3 transition-all"
             />
+            <div class="flex justify-end mb-1">
+              <button type="button" onclick="pasteField('job_bullets_1')" class="text-[11px] text-secondary hover:text-green-700 font-medium flex items-center gap-1 transition-colors">
+                <span class="material-symbols-outlined" style="font-size:13px">content_paste</span> Paste bullets
+              </button>
+            </div>
             <textarea
-              name="job_bullets_1" rows="4" maxlength="800"
-              placeholder="One bullet per line:&#10;Responsible for monthly close process&#10;Helped with budgeting and forecasting&#10;Worked on cross-functional projects"
+              id="job_bullets_1" name="job_bullets_1" rows="3" maxlength="800"
+              placeholder="One bullet per line (optional)"
               class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 resize-none transition-all"
             >{{ prefill.jobs[0].bullets if prefill and prefill.jobs else '' }}</textarea>
           </div>
@@ -171,34 +234,142 @@
 
 {% block extra_scripts %}
 <script>
+// ── Paste individual field ────────────────────────────────────────────────────
+async function pasteField(fieldId) {
+  try {
+    const text = await navigator.clipboard.readText();
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.value = text;
+    el.dispatchEvent(new Event('input'));
+  } catch (e) {
+    // Fallback: focus the field so user can Ctrl+V manually
+    const el = document.getElementById(fieldId);
+    if (el) {
+      el.focus();
+      el.select();
+    }
+  }
+}
+
+// ── Paste all modal ───────────────────────────────────────────────────────────
+document.getElementById('paste-all-btn').addEventListener('click', function() {
+  document.getElementById('paste-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('paste-modal-input').focus(), 100);
+});
+
+function closePasteModal() {
+  document.getElementById('paste-modal').classList.add('hidden');
+  document.getElementById('paste-modal-input').value = '';
+}
+
+// Close modal on backdrop click
+document.getElementById('paste-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePasteModal();
+});
+
+async function submitPaste() {
+  const text = document.getElementById('paste-modal-input').value.trim();
+  if (!text || text.length < 50) {
+    alert('Please paste your LinkedIn profile text first.');
+    return;
+  }
+  const btn = document.getElementById('paste-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Parsing…';
+
+  try {
+    const res = await fetch('/parse-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+
+    if (data.headline) {
+      const h = document.getElementById('headline');
+      h.value = data.headline;
+      h.dispatchEvent(new Event('input'));
+    }
+    if (data.about) {
+      const a = document.getElementById('about');
+      a.value = data.about;
+      a.dispatchEvent(new Event('input'));
+    }
+    if (data.jobs && data.jobs.length > 0) {
+      const t1 = document.getElementById('job_title_1');
+      const b1 = document.getElementById('job_bullets_1');
+      if (t1) t1.value = data.jobs[0].title || '';
+      if (b1) b1.value = data.jobs[0].bullets || '';
+      for (let i = 1; i < Math.min(data.jobs.length, 3); i++) {
+        if (jobCount < MAX_JOBS) addJob(data.jobs[i]);
+      }
+    }
+
+    closePasteModal();
+    btn.disabled = false;
+    btn.textContent = 'Fill my profile';
+
+    // Flash the banner green briefly
+    const banner = document.getElementById('paste-all-btn');
+    banner.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">check</span> Filled!';
+    banner.style.background = '#006c4a';
+    setTimeout(() => {
+      banner.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">content_paste</span> Paste & Fill';
+      banner.style.background = '';
+    }, 2500);
+
+  } catch (e) {
+    alert('Parsing failed — please fill in the fields manually.');
+    btn.disabled = false;
+    btn.textContent = 'Fill my profile';
+  }
+}
+
+// ── Add job (shared by button + paste-all) ────────────────────────────────────
 let jobCount = 1;
 const MAX_JOBS = 3;
 
-document.getElementById('add-job-btn').addEventListener('click', function() {
+function addJob(prefillData) {
   if (jobCount >= MAX_JOBS) return;
   jobCount++;
   const container = document.getElementById('jobs-container');
   const block = document.createElement('div');
   block.className = 'job-block bg-surface border border-outline-variant rounded-xl p-5';
   block.id = 'job-' + jobCount;
+  const n = jobCount;
   block.innerHTML = `
     <div class="flex items-center justify-between mb-3">
-      <span class="text-label-caps text-primary uppercase tracking-wider">Job ${jobCount}</span>
-      <button type="button" onclick="removeJob(${jobCount})"
-        class="flex items-center gap-1 text-[12px] text-error hover:text-red-700 transition-colors">
-        <span class="material-symbols-outlined" style="font-size:15px">remove_circle</span> Remove
+      <span class="text-label-caps text-primary uppercase tracking-wider">Job ${n}</span>
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="pasteField('job_title_${n}')" class="text-[11px] text-secondary hover:text-green-700 font-medium flex items-center gap-1 transition-colors">
+          <span class="material-symbols-outlined" style="font-size:13px">content_paste</span> Paste title
+        </button>
+        <button type="button" onclick="removeJob(${n})"
+          class="flex items-center gap-1 text-[12px] text-error hover:text-red-700 transition-colors">
+          <span class="material-symbols-outlined" style="font-size:15px">remove_circle</span> Remove
+        </button>
+      </div>
+    </div>
+    <input type="text" id="job_title_${n}" name="job_title_${n}"
+      placeholder="Job title & company" maxlength="150"
+      value="${(prefillData && prefillData.title) ? prefillData.title.replace(/"/g,'&quot;') : ''}"
+      class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 mb-3 transition-all" />
+    <div class="flex justify-end mb-1">
+      <button type="button" onclick="pasteField('job_bullets_${n}')" class="text-[11px] text-secondary hover:text-green-700 font-medium flex items-center gap-1 transition-colors">
+        <span class="material-symbols-outlined" style="font-size:13px">content_paste</span> Paste bullets
       </button>
     </div>
-    <input type="text" name="job_title_${jobCount}"
-      placeholder="Job title & company"
-      maxlength="150"
-      class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 mb-3 transition-all" />
-    <textarea name="job_bullets_${jobCount}" rows="4" maxlength="800"
-      placeholder="One bullet per line"
-      class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 resize-none transition-all"></textarea>
+    <textarea id="job_bullets_${n}" name="job_bullets_${n}" rows="3" maxlength="800"
+      placeholder="One bullet per line (optional)"
+      class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 resize-none transition-all">${(prefillData && prefillData.bullets) ? prefillData.bullets : ''}</textarea>
   `;
   container.appendChild(block);
   if (jobCount >= MAX_JOBS) document.getElementById('add-job-btn').style.display = 'none';
+}
+
+document.getElementById('add-job-btn').addEventListener('click', function() {
+  addJob(null);
 });
 
 function removeJob(n) {
@@ -208,41 +379,19 @@ function removeJob(n) {
   document.getElementById('add-job-btn').style.display = '';
 }
 
-// Restore additional jobs from prefill if error occurred
+// ── Restore prefill jobs ──────────────────────────────────────────────────────
 {% if prefill and prefill.jobs and prefill.jobs|length > 1 %}
 document.addEventListener('DOMContentLoaded', function() {
   const extraJobs = {{ prefill.jobs[1:] | tojson }};
-  extraJobs.forEach(function(job) {
-    if (jobCount >= MAX_JOBS) return;
-    jobCount++;
-    const container = document.getElementById('jobs-container');
-    const block = document.createElement('div');
-    block.className = 'job-block bg-surface border border-outline-variant rounded-xl p-5';
-    block.id = 'job-' + jobCount;
-    block.innerHTML = `
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-label-caps text-primary uppercase tracking-wider">Job ${jobCount}</span>
-        <button type="button" onclick="removeJob(${jobCount})"
-          class="flex items-center gap-1 text-[12px] text-error hover:text-red-700 transition-colors">
-          <span class="material-symbols-outlined" style="font-size:15px">remove_circle</span> Remove
-        </button>
-      </div>
-      <input type="text" name="job_title_${jobCount}"
-        value="${job.title || ''}"
-        placeholder="Job title & company" maxlength="150"
-        class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 mb-3 transition-all" />
-      <textarea name="job_bullets_${jobCount}" rows="4" maxlength="800"
-        placeholder="One bullet per line"
-        class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-sm placeholder:text-outline/50 resize-none transition-all">${job.bullets || ''}</textarea>
-    `;
-    container.appendChild(block);
-    if (jobCount >= MAX_JOBS) document.getElementById('add-job-btn').style.display = 'none';
-  });
+  extraJobs.forEach(function(job) { addJob(job); });
 });
 {% endif %}
+
+// ── Submit spinner ────────────────────────────────────────────────────────────
+document.getElementById('rewrite-form').addEventListener('submit', function() {
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="material-symbols-outlined animate-spin" style="animation:spin 1s linear infinite">progress_activity</span> Generating your rewrites…';
+  btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite">progress_activity</span> Generating your rewrites…';
 });
 </script>
 <style>

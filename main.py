@@ -103,14 +103,18 @@ Rewrite the following LinkedIn profile sections for someone targeting: {target_r
 Tone: {tone} — {tone_guide.get(tone, '')}
 
 Guidelines:
-- The goal is transformation, not translation — rewrite aggressively, then soften if needed
-- Every bullet must prove impact — if the original doesn't, invent the structure even if the numbers aren't there
+- The goal is transformation, not invention — rewrite what the user gave you more powerfully, never add what they didn't
+- NEVER invent numbers, percentages, timeframes, team sizes, or metrics the user did not provide. If there are no numbers, write without them — strong verbs and specific language are enough.
+- NEVER add context, outcomes, or achievements the user did not mention in the About or bullets. If the original is thin, make it sharper — not longer or more impressive-sounding.
+- If the user has provided rich detail, stay close to what they gave you. Your job is to rewrite their words more powerfully, not to embellish beyond their input.
+- HEADLINE EXCEPTION: the headline has more creative freedom — it should be captivating, sharp, and make a recruiter stop scrolling. Use the user's background and target role as inspiration to craft something memorable. It must still be grounded in who they are, but it can be bolder than their original wording.
 - The headline should work as hard as a billboard — specific, searchable, and impossible to ignore
-- The About section must always have four parts regardless of input length: an opening hook that earns attention, what you actually do and how, what makes you distinct, and a closing CTA — if the input is thin, infer intelligently from context and target role
+- The About section must always have four parts regardless of input length: an opening hook that earns attention, what you actually do and how, what makes you distinct, and a closing CTA — infer from what the user provided, never from thin air
 - If a phrase could appear on anyone's profile, rewrite it until it could only appear on this person's
 - Weak verbs, hollow adjectives, and corporate filler should quietly disappear in the rewrite
 - Lead every bullet with a verb that carries weight — the kind that makes a reader lean forward
-- Each bullet must be exactly one sentence — no semicolons, no multiple clauses, no paragraph-style writing. One action, one outcome, full stop.
+- Each bullet must be exactly one short, punchy sentence — maximum 15 words. No exceptions.
+- Start with a strong action verb. End there. No subclauses, no "resulting in", no "to achieve", no filler endings.
 - Only rewrite bullets the user has actually provided — if a job has no bullets, return an empty bullets array for that job. Never invent bullets from nothing.
 - The target role informs the framing and keyword choices — it should shape the profile's angle, not appear as a named destination in the text itself
 
@@ -168,7 +172,16 @@ async def landing(request: Request):
 
 @app.get("/optimize", response_class=HTMLResponse)
 async def optimize(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    ip         = get_client_ip(request)
+    memory_key = f"memory:{ip}"
+    prefill    = None
+    raw        = redis.get(memory_key)
+    if raw:
+        try:
+            prefill = json.loads(raw)
+        except Exception:
+            prefill = None
+    return templates.TemplateResponse("index.html", {"request": request, "prefill": prefill})
 
 
 @app.get("/generate")
@@ -252,6 +265,16 @@ async def generate(
             status_code=500,
         )
 
+    # ── Save inputs to memory for this IP ────────────────────────────────────
+    memory_key = f"memory:{ip}"
+    redis.setex(memory_key, TTL, json.dumps({  # 1 hour
+        "headline":    headline,
+        "about":       about,
+        "target_role": target_role,
+        "tone":        tone,
+        "jobs":        jobs,
+    }))
+
     # ── Store in Redis ────────────────────────────────────────────────────────
     key = f"rewrite:{uuid.uuid4().hex}"
     redis.setex(key, TTL, json.dumps({
@@ -282,6 +305,80 @@ async def generate(
         )
 
     return RedirectResponse(session.url, status_code=303)
+
+
+@app.post("/parse-profile")
+async def parse_profile(request: Request):
+    body = await request.json()
+    raw  = sanitize(body.get("text", ""), 8000)
+    if len(raw) < 50:
+        return {"headline": "", "about": "", "jobs": []}
+
+    prompt = f"""You are parsing a raw text dump from a LinkedIn profile page — the result of a user pressing Ctrl+A and Ctrl+C on their LinkedIn profile.
+
+This text is extremely noisy. It contains LinkedIn navigation UI, button labels, follower counts, sidebar content, ads, "People also viewed", footer links, and other page chrome mixed in with the actual profile content.
+
+Your job is to extract ONLY the real profile content and ignore all UI noise.
+
+What to IGNORE:
+- Navigation items: "LinkedIn", "Home", "My Network", "Jobs", "Messaging", "Notifications", "Me", "Work"
+- Buttons and CTAs: "Connect", "Message", "Follow", "More", "Open to", "Share", "Save"
+- Metrics: follower counts, connection counts, "500+ connections", "1st", "2nd", "3rd"
+- Dates and locations unless part of a job entry
+- Section headers on their own: "Experience", "Education", "Skills", "Recommendations", "Licenses"
+- Sidebar content: "People also viewed", "More profiles for you", "Ad", "Promoted"
+- Footer: "Privacy Policy", "Terms of Service", "Cookie Policy"
+- Profile completeness prompts: "Add a section", "Show all"
+
+What to EXTRACT:
+- Headline: the short professional description directly under the person's name (NOT their name, NOT their location)
+- About: the full text of their About/Summary section
+- Jobs: the 3 most recent positions only — for each: the job title, company name, and any bullet points or description text. Ignore dates.
+
+Return ONLY valid JSON — no markdown, no code fences, no explanation:
+{{
+  "headline": "extracted headline",
+  "about": "extracted about section text",
+  "jobs": [
+    {{"title": "Job Title at Company Name", "bullets": "first bullet or description line\\nsecond bullet"}},
+    {{"title": "Job Title at Company Name", "bullets": "first bullet\\nsecond bullet"}},
+    {{"title": "Job Title at Company Name", "bullets": ""}}
+  ]
+}}
+
+Rules:
+- Maximum 3 jobs, most recent first
+- If About section is not found, return empty string
+- If a job has no bullets or description, return empty string for bullets
+- If you cannot confidently identify the headline, return empty string
+- Never invent or improve content — extract only what is there
+- If the text does not appear to be a LinkedIn profile at all, return all empty strings and empty jobs array
+
+--- RAW PAGE TEXT ---
+{raw}
+"""
+    try:
+        loop    = asyncio.get_event_loop()
+        message = await loop.run_in_executor(
+            None,
+            lambda: claude.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=1000,
+                messages=[{"role": "user", "content": prompt}],
+            )
+        )
+        raw_resp = message.content[0].text.strip()
+        if raw_resp.startswith("```"):
+            raw_resp = raw_resp.split("```")[1]
+            if raw_resp.startswith("json"):
+                raw_resp = raw_resp[4:]
+        result = json.loads(raw_resp.strip())
+        # Enforce 3 job max just in case
+        if "jobs" in result:
+            result["jobs"] = result["jobs"][:3]
+        return result
+    except Exception:
+        return {"headline": "", "about": "", "jobs": []}
 
 
 @app.get("/result", response_class=HTMLResponse)
