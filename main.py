@@ -7,8 +7,8 @@ import stripe
 import anthropic
 import traceback
 
-from fastapi import FastAPI, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, Request, Form, HTTPException, Cookie
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
@@ -33,7 +33,23 @@ BASE_URL              = os.getenv("BASE_URL", "http://localhost:8000")
 
 TTL = 3600
 
-# ── Rate limiting ─────────────────────────────────────────────────────────────
+COOKIE_NAME = "pr_session"
+COOKIE_TTL  = 3600  # 1 hour, same as Redis TTL
+
+def get_session_token(request: Request) -> str | None:
+    return request.cookies.get(COOKIE_NAME)
+
+def set_session_cookie(response: Response, token: str):
+    response.set_cookie(
+        key=COOKIE_NAME,
+        value=token,
+        max_age=COOKIE_TTL,
+        httponly=True,   # not accessible from JS
+        samesite="lax",  # CSRF protection
+        secure=True,     # HTTPS only in production
+    )
+
+
 RATE_LIMIT  = 10
 RATE_WINDOW = 3600
 
@@ -172,16 +188,24 @@ async def landing(request: Request):
 
 @app.get("/optimize", response_class=HTMLResponse)
 async def optimize(request: Request):
-    ip         = get_client_ip(request)
-    memory_key = f"memory:{ip}"
+    token      = get_session_token(request)
     prefill    = None
-    raw        = redis.get(memory_key)
-    if raw:
-        try:
-            prefill = json.loads(raw)
-        except Exception:
-            prefill = None
-    return templates.TemplateResponse("index.html", {"request": request, "prefill": prefill})
+    if token:
+        raw = redis.get(f"memory:{token}")
+        if raw:
+            try:
+                prefill = json.loads(raw)
+            except Exception:
+                prefill = None
+
+    response = templates.TemplateResponse("index.html", {"request": request, "prefill": prefill})
+
+    # Issue a new token if none exists
+    if not token:
+        token = uuid.uuid4().hex
+        set_session_cookie(response, token)
+
+    return response
 
 
 @app.get("/generate")
@@ -265,9 +289,9 @@ async def generate(
             status_code=500,
         )
 
-    # ── Save inputs to memory for this IP ────────────────────────────────────
-    memory_key = f"memory:{ip}"
-    redis.setex(memory_key, TTL, json.dumps({  # 1 hour
+    # ── Save inputs to memory for this session ───────────────────────────────
+    token = get_session_token(request) or uuid.uuid4().hex
+    redis.setex(f"memory:{token}", TTL, json.dumps({
         "headline":    headline,
         "about":       about,
         "target_role": target_role,
