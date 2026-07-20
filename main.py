@@ -191,12 +191,12 @@ async def optimize(request: Request):
     token      = get_session_token(request)
     prefill    = None
     if token:
-        raw = redis.get(f"memory:{token}")
-        if raw:
-            try:
+        try:
+            raw = redis.get(f"memory:{token}")
+            if raw:
                 prefill = json.loads(raw)
-            except Exception:
-                prefill = None
+        except Exception:
+            prefill = None
 
     response = templates.TemplateResponse("index.html", {"request": request, "prefill": prefill})
 
